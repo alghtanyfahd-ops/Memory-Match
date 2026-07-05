@@ -57,6 +57,34 @@ function toggleMusic() {
   btn.textContent = '🔊 الموسيقى: تشغيل';
 }
 </script>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script>
+  const Pi = window.Pi;
+  Pi.init({ version: "2.0", sandbox: true });
 
+  async function loginWithPi() {
+    try {
+      const scopes = ['username', 'payments'];
+      const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+
+      // الاسم الذي يعيده Pi
+      player = auth.user.username;
+      localStorage.mmPlayer = player;
+
+      document.getElementById('name').value = player;
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('game').classList.remove('hidden');
+      newLevel();
+    } catch (error) {
+      alert('تعذر تسجيل الدخول عبر Pi. افتح اللعبة من Pi Browser ثم حاول مرة أخرى.');
+      console.error(error);
+    }
+  }
+
+  function onIncompletePaymentFound(payment) {
+    console.log('Incomplete Pi payment:', payment);
+    // لاحقًا: يرسل هذا إلى خادمك للتحقق أو الإكمال/الإلغاء.
+  }
+</script>
 
 </body></html>

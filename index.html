@@ -15,4 +15,48 @@ function win(){save();if(level<3){alert('أحسنت! انتقلت للمرحلة
 function save(){let a=JSON.parse(localStorage.mmLeaders||'[]');a.push({n:player,s:score,d:new Date().toLocaleDateString('ar')});a.sort((x,y)=>y.s-x.s);localStorage.mmLeaders=JSON.stringify(a.slice(0,10))}
 function leaders(){let a=JSON.parse(localStorage.mmLeaders||'[]');board.innerHTML=a.length?a.map(x=>`<li><b>${x.n}</b> — ${x.s} نقطة <span class="note">(${x.d})</span></li>`).join(''):'<li>لا توجد نتائج بعد.</li>'}
 function resetGame(){newLevel()}function logout(){location.reload()}window.onload=()=>{if(localStorage.mmPlayer)name.value=localStorage.mmPlayer}
-</script></body></html>
+</script> 
+<button id="musicBtn" style="position:fixed;left:16px;bottom:16px;z-index:9"
+  onclick="toggleMusic()">🔊 الموسيقى: تشغيل</button>
+
+<script>
+let audioCtx, musicTimer, musicOn = false;
+
+function playTone(freq, duration, when) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.06, when);
+  gain.gain.exponentialRampToValueAtTime(0.001, when + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(when);
+  osc.stop(when + duration);
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('musicBtn');
+  if (musicOn) {
+    clearInterval(musicTimer);
+    musicOn = false;
+    btn.textContent = '🔇 الموسيقى: إيقاف';
+    return;
+  }
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
+  const notes = [262, 330, 392, 330, 294, 349, 440, 349];
+  let i = 0;
+  const play = () => {
+    playTone(notes[i % notes.length], 0.22, audioCtx.currentTime);
+    i++;
+  };
+  play();
+  musicTimer = setInterval(play, 300);
+  musicOn = true;
+  btn.textContent = '🔊 الموسيقى: تشغيل';
+}
+</script>
+
+
+</body></html>

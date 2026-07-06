@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Memory Match</title>
+
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: system-ui, sans-serif; background: #101827; color: #fff; min-height: 100vh; }
@@ -15,6 +16,7 @@
     input, button { font: inherit; border-radius: 10px; padding: 11px; border: 0; }
     input { width: 100%; margin: 7px 0; background: #fff; color: #111; }
     button { background: #fbbf24; color: #111; font-weight: 800; cursor: pointer; margin: 6px 0; }
+    button:hover { filter: brightness(1.08); }
     .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
     .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
@@ -40,9 +42,8 @@
   <input id="name" maxlength="18" placeholder="Enter player name">
   <button onclick="start()">Play with Name</button>
   <button onclick="loginWithPi()">Login with Pi</button>
-  <button onclick="startPayment()">Start Transaction</button>
 
-  <p class="note">Open this game from Pi Browser for Pi login and payment.</p>
+  <p class="note">Open this game from Pi Browser for Pi login.</p>
 </section>
 
 <section id="game" class="hidden">
@@ -50,7 +51,6 @@
     <h1>Memory Match</h1>
     <div class="actions">
       <button onclick="resetGame()">Restart Level</button>
-      <button onclick="startPayment()">Start Transaction</button>
       <button onclick="logout()">Logout</button>
     </div>
   </div>
@@ -90,7 +90,12 @@
 
     function start() {
       player = document.getElementById("name").value.trim();
-      if (!player) return alert("Enter a player name first.");
+
+      if (!player) {
+        alert("Enter a player name first.");
+        return;
+      }
+
       openGame();
     }
 
@@ -105,10 +110,17 @@
       moves = 0;
       first = null;
       lock = false;
+
       const symbols = sets[Math.min(level - 1, 2)];
+
       deck = [...symbols, ...symbols]
         .sort(() => Math.random() - 0.5)
-        .map(value => ({ value, open: false, done: false }));
+        .map(value => ({
+          value,
+          open: false,
+          done: false
+        }));
+
       render();
     }
 
@@ -123,9 +135,15 @@
 
       deck.forEach((card, index) => {
         const button = document.createElement("button");
-        button.className = "tile " + ((card.open || card.done) ? "open" : "") + (card.done ? " done" : "");
+
+        button.className =
+          "tile " +
+          ((card.open || card.done) ? "open" : "") +
+          (card.done ? " done" : "");
+
         button.textContent = (card.open || card.done) ? card.value : "?";
         button.onclick = () => flip(index);
+
         grid.appendChild(button);
       });
 
@@ -134,7 +152,10 @@
 
     function flip(index) {
       const card = deck[index];
-      if (lock || card.open || card.done) return;
+
+      if (lock || card.open || card.done) {
+        return;
+      }
 
       card.open = true;
 
@@ -145,6 +166,7 @@
       }
 
       moves++;
+
       const firstCard = deck[first];
 
       if (firstCard.value === card.value) {
@@ -153,10 +175,14 @@
         score += Math.max(10, 50 - moves);
         first = null;
         render();
-        if (deck.every(item => item.done)) setTimeout(win, 350);
+
+        if (deck.every(item => item.done)) {
+          setTimeout(win, 350);
+        }
       } else {
         lock = true;
         render();
+
         setTimeout(() => {
           firstCard.open = false;
           card.open = false;
@@ -169,6 +195,7 @@
 
     function win() {
       save();
+
       if (level < 3) {
         alert("Level complete.");
         level++;
@@ -183,13 +210,20 @@
 
     function save() {
       const list = JSON.parse(localStorage.mmLeaders || "[]");
-      list.push({ n: player, s: score, d: new Date().toLocaleDateString("en") });
+
+      list.push({
+        n: player,
+        s: score,
+        d: new Date().toLocaleDateString("en")
+      });
+
       list.sort((a, b) => b.s - a.s);
       localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
     }
 
     function leaders() {
       const list = JSON.parse(localStorage.mmLeaders || "[]");
+
       document.getElementById("board").innerHTML = list.length
         ? list.map(item => `<li><b>${item.n}</b> - ${item.s} points</li>`).join("")
         : "<li>No scores yet.</li>";
@@ -203,71 +237,26 @@
       location.reload();
     }
 
-    Pi.init({ version: "2.0", sandbox: true });
+    Pi.init({
+      version: "2.0",
+      sandbox: true
+    });
 
     async function loginWithPi() {
       try {
-        const auth = await Pi.authenticate(["username"], function (payment) {
-          console.log("Incomplete Pi payment:", payment);
-        });
+        const auth = await Pi.authenticate(
+          ["username"],
+          function onIncompletePaymentFound(payment) {
+            console.log("Incomplete Pi payment:", payment);
+          }
+        );
 
         player = auth.user.username;
         document.getElementById("name").value = player;
         openGame();
       } catch (error) {
-        console.error(error);
-        alert("Pi login was not completed. Open the game in Pi Browser.");
-      }
-    }
-
-    async function startPayment() {
-      try {
-        await Pi.createPayment(
-          {
-            amount: 1,
-            memo: "Memory Match test payment",
-            metadata: { game: "memory-match" }
-          },
-          {
-            onReadyForServerApproval: async function (paymentId) {
-              const response = await fetch("/api/createPayment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  action: "approve",
-                  paymentId: paymentId
-                })
-              });
-
-              if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || "Payment approval failed");
-              }
-            },
-
-            onReadyForServerCompletion: async function (paymentId, txid) {
-              const response = await fetch("/api/createPayment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  action: "complete",
-                  paymentId: paymentId,
-                  txid: txid
-                })
-              });
-
-              if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || "Payment completion failed");
-              }
-
-              alert("Payment completed successfully.");
-            },
-
-            onCancel: function (paymentId) {
-              console.log("Payment canceled:", paymentId);
-              alert("Payment canceled.");
-            
+        console.error("Pi login error:", error);
+        alert("Pi login was not completed. Open the game in Pi Browser and try again.");
       }
     }
 

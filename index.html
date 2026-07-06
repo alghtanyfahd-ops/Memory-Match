@@ -8,107 +8,23 @@
 
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #101827;
-      color: #ffffff;
-      min-height: 100vh;
-    }
-    .app {
-      max-width: 900px;
-      margin: auto;
-      padding: 24px;
-    }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 10px 30px #0004;
-    }
-    h1 {
-      margin: 0 0 14px;
-      color: #fbbf24;
-    }
-    .hidden {
-      display: none;
-    }
-    input, button {
-      font: inherit;
-      border-radius: 10px;
-      padding: 11px;
-      border: 0;
-    }
-    input {
-      width: 100%;
-      margin: 7px 0;
-      background: #ffffff;
-      color: #111111;
-    }
-    button {
-      background: #fbbf24;
-      color: #111111;
-      font-weight: 800;
-      cursor: pointer;
-      margin: 6px 0;
-    }
-    button:hover {
-      filter: brightness(1.08);
-    }
-    .bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      margin: 15px 0;
-    }
-    .stats {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .pill {
-      background: #334155;
-      padding: 8px 12px;
-      border-radius: 999px;
-    }
-    .grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(4, 1fr);
-    }
-    .tile {
-      aspect-ratio: 1;
-      background: #334155;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      font-size: clamp(25px, 7vw, 46px);
-      transition: 0.2s;
-    }
-    .tile.open,
-    .tile.done {
-      background: #ffffff;
-      color: #111111;
-    }
-    .tile.done {
-      background: #86efac;
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .leader li {
-      padding: 8px;
-      border-bottom: 1px solid #334155;
-    }
-    .note {
-      color: #cbd5e1;
-      font-size: 0.92em;
-    }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #101827; color: #fff; min-height: 100vh; }
+    .app { max-width: 900px; margin: auto; padding: 24px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px #0004; }
+    h1 { margin: 0 0 14px; color: #fbbf24; }
+    .hidden { display: none; }
+    input, button { font: inherit; border-radius: 10px; padding: 11px; border: 0; }
+    input { width: 100%; margin: 7px 0; background: #fff; color: #111; }
+    button { background: #fbbf24; color: #111; font-weight: 800; cursor: pointer; margin: 6px 0; }
+    .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
+    .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); }
+    .tile { aspect-ratio: 1; background: #334155; border-radius: 14px; display: grid; place-items: center; font-size: clamp(25px, 7vw, 46px); }
+    .tile.open, .tile.done { background: #fff; color: #111; }
+    .tile.done { background: #86efac; }
+    .leader li { padding: 8px; border-bottom: 1px solid #334155; }
+    .note { color: #cbd5e1; font-size: .92em; }
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -125,71 +41,9 @@
   <input id="name" maxlength="18" placeholder="Enter player name">
   <button onclick="start()">Play with Name</button>
   <button onclick="loginWithPi()">Login with Pi</button>
-async function startPayment() {
-try {
-await Pi.createPayment(
-{
-amount: 1,
-memo: "Memory Match test payment",
-metadata: { game: "memory-match" }
-},
-{
-onReadyForServerApproval: async function (paymentId) {
-const response = await fetch("/api/createPayment", {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({
-action: "approve",
-paymentId: paymentId
-})
-});
+  <button onclick="startPayment()">Start Transaction</button>
 
-```
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Payment approval failed");
-      }
-    },
-
-    onReadyForServerCompletion: async function (paymentId, txid) {
-      const response = await fetch("/api/createPayment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "complete",
-          paymentId: paymentId,
-          txid: txid
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Payment completion failed");
-      }
-
-      alert("Payment completed successfully.");
-    },
-
-    onCancel: function (paymentId) {
-      console.log("Payment canceled:", paymentId);
-      alert("Payment canceled.");
-    },
-
-    onError: function (error) {
-      console.error("Pi payment error:", error);
-      alert("Payment error. Check Pi Browser and try again.");
-    }
-  }
-);
-```
-
-} catch (error) {
-console.error("Payment start error:", error);
-alert("Could not start payment.");
-}
-}
-
-  <p class="note">Progress and leaderboard are saved on this device.</p>
+  <p class="note">Open this game from Pi Browser for Pi login and payment.</p>
 </section>
 
 <section id="game" class="hidden">
@@ -197,6 +51,7 @@ alert("Could not start payment.");
     <h1>Memory Match</h1>
     <div class="actions">
       <button onclick="resetGame()">Restart Level</button>
+      <button onclick="startPayment()">Start Transaction</button>
       <button onclick="logout()">Logout</button>
     </div>
   </div>
@@ -219,10 +74,6 @@ alert("Could not start payment.");
 
   </main>
 
-  <button id="musicBtn" style="position:fixed;left:16px;bottom:16px;z-index:9" onclick="toggleMusic()">
-    Music: Off
-  </button>
-
   <script>
     let player = "";
     let level = 1;
@@ -240,12 +91,7 @@ alert("Could not start payment.");
 
     function start() {
       player = document.getElementById("name").value.trim();
-
-      if (!player) {
-        alert("Enter a player name first.");
-        return;
-      }
-
+      if (!player) return alert("Enter a player name first.");
       openGame();
     }
 
@@ -260,18 +106,10 @@ alert("Could not start payment.");
       moves = 0;
       first = null;
       lock = false;
-
       const symbols = sets[Math.min(level - 1, 2)];
-
       deck = [...symbols, ...symbols]
         .sort(() => Math.random() - 0.5)
-        .map((value, index) => ({
-          value,
-          index,
-          open: false,
-          done: false
-        }));
-
+        .map(value => ({ value, open: false, done: false }));
       render();
     }
 
@@ -286,15 +124,9 @@ alert("Could not start payment.");
 
       deck.forEach((card, index) => {
         const button = document.createElement("button");
-
-        button.className =
-          "tile " +
-          ((card.open || card.done) ? "open" : "") +
-          (card.done ? " done" : "");
-
+        button.className = "tile " + ((card.open || card.done) ? "open" : "") + (card.done ? " done" : "");
         button.textContent = (card.open || card.done) ? card.value : "?";
         button.onclick = () => flip(index);
-
         grid.appendChild(button);
       });
 
@@ -303,7 +135,6 @@ alert("Could not start payment.");
 
     function flip(index) {
       const card = deck[index];
-
       if (lock || card.open || card.done) return;
 
       card.open = true;
@@ -315,7 +146,6 @@ alert("Could not start payment.");
       }
 
       moves++;
-
       const firstCard = deck[first];
 
       if (firstCard.value === card.value) {
@@ -324,14 +154,10 @@ alert("Could not start payment.");
         score += Math.max(10, 50 - moves);
         first = null;
         render();
-
-        if (deck.every(item => item.done)) {
-          setTimeout(win, 350);
-        }
+        if (deck.every(item => item.done)) setTimeout(win, 350);
       } else {
         lock = true;
         render();
-
         setTimeout(() => {
           firstCard.open = false;
           card.open = false;
@@ -344,9 +170,8 @@ alert("Could not start payment.");
 
     function win() {
       save();
-
       if (level < 3) {
-        alert("Level complete. Moving to the next level.");
+        alert("Level complete.");
         level++;
         newLevel();
       } else {
@@ -359,25 +184,15 @@ alert("Could not start payment.");
 
     function save() {
       const list = JSON.parse(localStorage.mmLeaders || "[]");
-
-      list.push({
-        n: player,
-        s: score,
-        d: new Date().toLocaleDateString("en")
-      });
-
+      list.push({ n: player, s: score, d: new Date().toLocaleDateString("en") });
       list.sort((a, b) => b.s - a.s);
-
       localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
     }
 
     function leaders() {
       const list = JSON.parse(localStorage.mmLeaders || "[]");
-
       document.getElementById("board").innerHTML = list.length
-        ? list.map(item =>
-            `<li><b>${item.n}</b> - ${item.s} points <span class="note">(${item.d})</span></li>`
-          ).join("")
+        ? list.map(item => `<li><b>${item.n}</b> - ${item.s} points</li>`).join("")
         : "<li>No scores yet.</li>";
     }
 
@@ -389,71 +204,81 @@ alert("Could not start payment.");
       location.reload();
     }
 
-    let audioCtx;
-    let musicTimer;
-    let musicOn = false;
-
-    function playTone(freq, duration, when) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.value = freq;
-
-      gain.gain.setValueAtTime(0.06, when);
-      gain.gain.exponentialRampToValueAtTime(0.001, when + duration);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start(when);
-      osc.stop(when + duration);
-    }
-
-    function toggleMusic() {
-      const button = document.getElementById("musicBtn");
-
-      if (musicOn) {
-        clearInterval(musicTimer);
-        musicOn = false;
-        button.textContent = "Music: Off";
-        return;
-      }
-
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      audioCtx.resume();
-
-      const notes = [262, 330, 392, 330, 294, 349, 440, 349];
-      let index = 0;
-
-      const play = () => {
-        playTone(notes[index % notes.length], 0.22, audioCtx.currentTime);
-        index++;
-      };
-
-      play();
-      musicTimer = setInterval(play, 300);
-      musicOn = true;
-      button.textContent = "Music: On";
-    }
-
     Pi.init({ version: "2.0", sandbox: true });
 
     async function loginWithPi() {
       try {
-        const auth = await Pi.authenticate(
-          ["username"],
-          function onIncompletePaymentFound(payment) {
-            console.log("Incomplete Pi payment:", payment);
-          }
-        );
+        const auth = await Pi.authenticate(["username"], function (payment) {
+          console.log("Incomplete Pi payment:", payment);
+        });
 
         player = auth.user.username;
         document.getElementById("name").value = player;
         openGame();
       } catch (error) {
-        console.error("Pi login error:", error);
-        alert("Pi login was not completed. Open the game in Pi Browser and try again.");
+        console.error(error);
+        alert("Pi login was not completed. Open the game in Pi Browser.");
+      }
+    }
+
+    async function startPayment() {
+      try {
+        await Pi.createPayment(
+          {
+            amount: 1,
+            memo: "Memory Match test payment",
+            metadata: { game: "memory-match" }
+          },
+          {
+            onReadyForServerApproval: async function (paymentId) {
+              const response = await fetch("/api/createPayment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "approve",
+                  paymentId: paymentId
+                })
+              });
+
+              if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || "Payment approval failed");
+              }
+            },
+
+            onReadyForServerCompletion: async function (paymentId, txid) {
+              const response = await fetch("/api/createPayment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "complete",
+                  paymentId: paymentId,
+                  txid: txid
+                })
+              });
+
+              if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || "Payment completion failed");
+              }
+
+              alert("Payment completed successfully.");
+            },
+
+            onCancel: function (paymentId) {
+              console.log("Payment canceled:", paymentId);
+              alert("Payment canceled.");
+            },
+
+            onError: function (error) {
+              console.error("Pi payment error:", error);
+              alert("Payment error.");
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Payment start error:", error);
+        alert("Could not start payment.");
       }
     }
 
@@ -463,22 +288,6 @@ alert("Could not start payment.");
       }
     };
   </script>
-<script>
-async function pay() {
-  try {
-    const res = await fetch("/api/createPayment", {
-      method: "POST"
-    });
 
-    const data = await res.json();
-    console.log(data);
-
-    alert("Transaction started. Complete it in Pi Browser.");
-  } catch (e) {
-    console.error(e);
-    alert("Payment failed");
-  }
-}
-</script>
 </body>
 </html>

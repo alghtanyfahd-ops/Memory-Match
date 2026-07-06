@@ -266,6 +266,20 @@
       }
     };
   </script>
+<audio id="bgMusic" loop>
+  <source src="assets/music/background.mp3" type="audio/mpeg">
+</audio>
 
+<button id="musicButton">تشغيل الموسيقى</button>
+
+<script>
+  const music = document.getElementById("bgMusic");
+  const button = document.getElementById("musicButton");
+
+  button.addEventListener("click", () => {
+    music.play();
+    button.style.display = "none";
+  });
+</script>
 </body>
 </html>

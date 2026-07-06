@@ -125,7 +125,70 @@
   <input id="name" maxlength="18" placeholder="Enter player name">
   <button onclick="start()">Play with Name</button>
   <button onclick="loginWithPi()">Login with Pi</button>
-<button onclick="pay()">Test Transaction</button>
+async function startPayment() {
+try {
+await Pi.createPayment(
+{
+amount: 1,
+memo: "Memory Match test payment",
+metadata: { game: "memory-match" }
+},
+{
+onReadyForServerApproval: async function (paymentId) {
+const response = await fetch("/api/createPayment", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+action: "approve",
+paymentId: paymentId
+})
+});
+
+```
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Payment approval failed");
+      }
+    },
+
+    onReadyForServerCompletion: async function (paymentId, txid) {
+      const response = await fetch("/api/createPayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "complete",
+          paymentId: paymentId,
+          txid: txid
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Payment completion failed");
+      }
+
+      alert("Payment completed successfully.");
+    },
+
+    onCancel: function (paymentId) {
+      console.log("Payment canceled:", paymentId);
+      alert("Payment canceled.");
+    },
+
+    onError: function (error) {
+      console.error("Pi payment error:", error);
+      alert("Payment error. Check Pi Browser and try again.");
+    }
+  }
+);
+```
+
+} catch (error) {
+console.error("Payment start error:", error);
+alert("Could not start payment.");
+}
+}
+
   <p class="note">Progress and leaderboard are saved on this device.</p>
 </section>
 

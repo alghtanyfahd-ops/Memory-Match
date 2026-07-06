@@ -85,30 +85,10 @@ function toggleMusic() {
     console.log('Incomplete Pi payment:', payment);
     // لاحقًا: يرسل هذا إلى خادمك للتحقق أو الإكمال/الإلغاء.
   }
+
+  <button onclick="loginWithPi()">الدخول بحساب Pi</button>
+
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
-  
- <button onclick="loginWithPi()">Login with Pi</button> 
-<script>
-async function loginWithPi() {
-  const scopes = ["username", "payments"];
-
-  try {
-    const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-    console.log("User logged in:", auth);
-    alert("Login successful 🎉");
-  } catch (err) {
-    console.log(err);
-    alert("Login failed ❌");
-  }
-}
-
-function onIncompletePaymentFound(payment) {
-  console.log("Incomplete payment:", payment);
-}
-</script>
-
-  <button onclick="loginWithPi()">Login with Pi</button>
 
 <script>
   Pi.init({ version: "2.0", sandbox: true });
@@ -118,18 +98,22 @@ function onIncompletePaymentFound(payment) {
       const auth = await Pi.authenticate(
         ["username"],
         function onIncompletePaymentFound(payment) {
-          console.log("Incomplete payment:", payment);
+          console.log("Incomplete Pi payment:", payment);
         }
       );
 
-      alert("تم تسجيل الدخول بنجاح: " + auth.user.username);
+      player = auth.user.username;
+      localStorage.mmPlayer = player;
+
+      document.getElementById("name").value = player;
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      newLevel();
     } catch (error) {
-      console.error(error);
+      console.error("Pi login error:", error);
       alert("لم يكتمل تسجيل الدخول. افتح اللعبة من Pi Browser ثم جرّب مرة أخرى.");
     }
   }
 </script>
 
-</body>
-</html>
 </body></html>

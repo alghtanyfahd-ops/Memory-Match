@@ -281,5 +281,27 @@
     button.style.display = "none";
   });
 </script>
+<audio id="bgMusic" loop preload="auto">
+  <source src="assets/music/background.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const music = document.getElementById("bgMusic");
+  const button = document.getElementById("musicButton");
+
+  button.addEventListener("click", async () => {
+    try {
+      if (music.paused) {
+        await music.play();
+        button.textContent = "إيقاف الموسيقى";
+      } else {
+        music.pause();
+        button.textContent = "تشغيل الموسيقى";
+      }
+    } catch (error) {
+      console.error("تحقق من مسار ملف الموسيقى:", error);
+    }
+  });
+</script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!doctype html>
 
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Memory Match</title>
+  <title>لعبة مطابقة الذاكرة</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -20,8 +20,8 @@
     .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
     .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
-    .grid { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); }
-    .tile { aspect-ratio: 1; background: #334155; border-radius: 14px; display: grid; place-items: center; font-size: clamp(25px, 7vw, 46px); }
+    .grid { display: grid; gap: 10px; }
+    .tile { aspect-ratio: 1; background: #334155; border-radius: 14px; display: grid; place-items: center; font-size: clamp(22px, 6vw, 46px); }
     .tile.open, .tile.done { background: #fff; color: #111; }
     .tile.done { background: #86efac; }
     .leader li { padding: 8px; border-bottom: 1px solid #334155; }
@@ -35,39 +35,40 @@
 <body>
   <main class="app">
     <section id="login" class="card">
-      <h1>Memory Match</h1>
-      <p>Match the cards, earn points, and reach level 70.</p>
+      <h1>لعبة مطابقة الذاكرة</h1>
+      <p>طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.</p>
 
 ```
-  <input id="name" maxlength="18" placeholder="Enter player name">
-  <button onclick="start()">Play with Name</button>
-  <button onclick="loginWithPi()">Login with Pi</button>
+  <input id="name" maxlength="18" placeholder="اكتب اسم اللاعب">
+  <button onclick="start()">ابدأ بالاسم</button>
+  <button onclick="loginWithPi()">تسجيل الدخول عبر Pi</button>
 
-  <p class="note">Open this game from Pi Browser for Pi login.</p>
+  <p class="note">استخدم Pi Browser لتسجيل الدخول عبر Pi.</p>
 </section>
 
 <section id="game" class="hidden">
   <div class="bar">
-    <h1>Memory Match</h1>
+    <h1>لعبة مطابقة الذاكرة</h1>
 
     <div class="actions">
-      <button id="musicBtn">تشغيل الموسيقى 🎵</button>
-      <button onclick="resetGame()">Restart Level</button>
-      <button onclick="logout()">Logout</button>
+      <button id="musicBtn">تشغيل موسيقى هادئة 🎵</button>
+      <button onclick="resetGame()">إعادة المستوى</button>
+      <button onclick="logout()">خروج</button>
     </div>
   </div>
 
   <div class="stats">
-    <span class="pill">Player: <b id="who"></b></span>
-    <span class="pill">Level: <b id="level"></b> / 70</span>
-    <span class="pill">Score: <b id="score"></b></span>
-    <span class="pill">Moves: <b id="moves"></b></span>
+    <span class="pill">اللاعب: <b id="who"></b></span>
+    <span class="pill">المستوى: <b id="level"></b> / 70</span>
+    <span class="pill">النقاط: <b id="score"></b></span>
+    <span class="pill">الحركات: <b id="moves"></b></span>
+    <span class="pill">المربعات: <b id="tiles"></b></span>
   </div>
 
   <div id="grid" class="grid"></div>
 
   <section class="card" style="margin-top:18px">
-    <h2>Leaderboard</h2>
+    <h2>لوحة المتصدرين</h2>
     <ol id="board" class="leader"></ol>
   </section>
 </section>
@@ -76,37 +77,47 @@
   </main>
 
 <script>
+/* موسيقى هادئة باستخدام Web Audio API */
 let audioCtx;
 let musicOn = false;
 let musicTimer;
+let musicStep = 0;
 
 function startMusic() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  function playTone(freq) {
+  const melody = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 246.94, 293.66];
+
+  function playSoftTone(freq) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
     osc.type = "sine";
     osc.frequency.value = freq;
-    gain.gain.value = 0.05;
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
 
     osc.connect(gain);
     gain.connect(audioCtx.destination);
 
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.25);
+    osc.stop(audioCtx.currentTime + 0.7);
   }
 
+  playSoftTone(melody[musicStep]);
   musicTimer = setInterval(() => {
-    const notes = [220, 262, 330, 392, 523];
-    playTone(notes[Math.floor(Math.random() * notes.length)]);
-  }, 300);
+    musicStep = (musicStep + 1) % melody.length;
+    playSoftTone(melody[musicStep]);
+  }, 700);
 }
 
 function stopMusic() {
   clearInterval(musicTimer);
-  if (audioCtx) audioCtx.close();
+  if (audioCtx) {
+    audioCtx.close();
+    audioCtx = null;
+  }
 }
 
 document.getElementById("musicBtn").onclick = () => {
@@ -117,18 +128,20 @@ document.getElementById("musicBtn").onclick = () => {
   } else {
     stopMusic();
     musicOn = false;
-    document.getElementById("musicBtn").textContent = "تشغيل الموسيقى 🎵";
+    document.getElementById("musicBtn").textContent = "تشغيل موسيقى هادئة 🎵";
   }
 };
 
-/* GAME */
+/* اللعبة */
 const MAX_LEVEL = 70;
+
 const SYMBOLS = [
-  "A","B","C","D","E","F","G","H","I","J",
-  "K","L","M","N","O","P","Q","R","S","T",
-  "U","V","W","X","Y","Z","1","2","3","4",
-  "5","6","7","8","9","!","@","#","$","%",
-  "&","*","+","?","♥","★","◆","●","▲","☀"
+  "🐶","🐱","🐭","🐰","🦊","🐼","🐨","🐯","🦁","🐸",
+  "🐵","🐷","🐮","🐔","🐧","🦄","🐝","🦋","🐢","🐬",
+  "1","2","3","4","5","6","7","8","9","0",
+  "🏠","🏡","🏢","🏘️","🏰","🚗","🚕","🚌","🚙","🚓",
+  "🌱","🌿","🌵","🌳","🌲","🌴","🌷","🌸","🌻","🌹",
+  "🍀","🍁","🌼","🪴","🏎️","🚜","🚲","🛵","🚚","🚑"
 ];
 
 let player = "";
@@ -140,13 +153,23 @@ let lock = false;
 let deck = [];
 
 function getPairsForLevel() {
-  return Math.min(4 + Math.floor((level - 1) / 5), 12);
+  /* يبدأ بـ 4 أزواج ويزداد زوج واحد كل مستويين حتى 30 زوجًا */
+  return Math.min(4 + Math.floor((level - 1) / 2), 30);
+}
+
+function getColumns(totalTiles) {
+  if (totalTiles <= 16) return 4;
+  if (totalTiles <= 24) return 5;
+  if (totalTiles <= 36) return 6;
+  if (totalTiles <= 48) return 7;
+  return 8;
 }
 
 function start() {
   player = document.getElementById("name").value.trim();
+
   if (!player) {
-    alert("Enter name");
+    alert("اكتب اسم اللاعب أولًا");
     return;
   }
 
@@ -158,8 +181,10 @@ function start() {
 function openGame() {
   localStorage.mmPlayer = player;
   loadProgress();
+
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
+
   newLevel();
 }
 
@@ -200,9 +225,11 @@ function render() {
   document.getElementById("level").textContent = level;
   document.getElementById("score").textContent = score;
   document.getElementById("moves").textContent = moves;
+  document.getElementById("tiles").textContent = deck.length;
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+  grid.style.gridTemplateColumns = `repeat(${getColumns(deck.length)}, 1fr)`;
 
   deck.forEach((c, i) => {
     const b = document.createElement("button");
@@ -217,6 +244,7 @@ function render() {
 
 function flip(i) {
   const c = deck[i];
+
   if (lock || c.open || c.done) return;
 
   c.open = true;
@@ -243,7 +271,7 @@ function flip(i) {
       setTimeout(() => {
         if (level >= MAX_LEVEL) {
           addLeader();
-          alert("Congratulations! You completed all 70 levels.");
+          alert("مبروك! أكملت جميع المستويات الـ 70.");
           level = 1;
           score = 0;
           saveProgress();
@@ -251,10 +279,10 @@ function flip(i) {
         } else {
           level++;
           saveProgress();
-          alert("Level complete! Welcome to level " + level);
+          alert("أكملت المستوى! انتقلت إلى المستوى " + level);
           newLevel();
         }
-      }, 500);
+      }, 600);
     }
   } else {
     lock = true;
@@ -265,7 +293,7 @@ function flip(i) {
       first = null;
       lock = false;
       render();
-    }, 600);
+    }, 700);
   }
 
   render();
@@ -273,8 +301,10 @@ function flip(i) {
 
 function addLeader() {
   const list = JSON.parse(localStorage.mmLeaders || "[]");
+
   list.push({ n: player, s: score });
   list.sort((a, b) => b.s - a.s);
+
   localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
 }
 
@@ -284,7 +314,7 @@ function leaders() {
   document.getElementById("board").innerHTML =
     list.length
       ? list.map(x => `<li>${x.n} - ${x.s}</li>`).join("")
-      : "<li>No scores</li>";
+      : "<li>لا توجد نتائج بعد</li>";
 }
 
 function resetGame() {
@@ -296,7 +326,7 @@ function logout() {
   location.reload();
 }
 
-/* Pi login */
+/* تسجيل الدخول عبر Pi */
 Pi.init({ version: "2.0", sandbox: true });
 
 async function loginWithPi() {
@@ -304,11 +334,9 @@ async function loginWithPi() {
     const auth = await Pi.authenticate(["username"]);
     player = auth.user.username;
     document.getElementById("name").value = player;
-    level = 1;
-    score = 0;
     openGame();
   } catch (e) {
-    alert("Pi login error");
+    alert("حدث خطأ في تسجيل الدخول عبر Pi");
   }
 }
 

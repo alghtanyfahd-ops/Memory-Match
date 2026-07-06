@@ -88,4 +88,23 @@ function toggleMusic() {
 </script>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
  <button onclick="loginWithPi()">Login with Pi</button> 
+<script>
+async function loginWithPi() {
+  const scopes = ["username", "payments"];
+
+  try {
+    const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+    console.log("User logged in:", auth);
+    alert("Login successful 🎉");
+  } catch (err) {
+    console.log(err);
+    alert("Login failed ❌");
+  }
+}
+
+function onIncompletePaymentFound(payment) {
+  console.log("Incomplete payment:", payment);
+}
+</script>
+
 </body></html>

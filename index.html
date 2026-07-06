@@ -30,235 +30,26 @@
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script>
+  Pi.init({ version: "2.0", sandbox: true });
 
-</head>
+  async function loginWithPi() {
+    try {
+      const auth = await Pi.authenticate(
+        ["username"],
+        function onIncompletePaymentFound(payment) {
+          console.log(payment);
+        }
+      );
 
-<body>
-  <main class="app">
-    <section id="login" class="card">
-      <h1>🧠 ميموري ماتش</h1>
-      <p>طابق البطاقات، اجمع النقاط، وتصدر القائمة.</p>
-
-```
-  <input id="name" maxlength="18" placeholder="اكتب اسم اللاعب">
-  <button onclick="start()">دخول اللعبة بالاسم</button>
- <button onclick="loginWithPi()">الدخول بحساب Pi</button>
-      <button onclick="loginWithPi()">الدخول بحساب Pi</button>
-
-  <p class="note">يُحفظ التقدم ولوحة المتصدرين على هذا الجهاز.</p>
-</section>
-
-<section id="game" class="hidden">
-  <div class="bar">
-    <h1>🧠 ميموري ماتش</h1>
-    <div class="actions">
-      <button onclick="resetGame()">إعادة المرحلة</button>
-      <button onclick="logout()">خروج</button>
-    </div>
-  </div>
-
-  <div class="stats">
-    <span class="pill">اللاعب: <b id="who"></b></span>
-    <span class="pill">المرحلة: <b id="level"></b></span>
-    <span class="pill">النقاط: <b id="score"></b></span>
-    <span class="pill">الحركات: <b id="moves"></b></span>
-  </div>
-
-  <div id="grid" class="grid"></div>
-
-  <section class="card" style="margin-top:18px">
-    <h2>🏆 لوحة المتصدرين</h2>
-    <ol id="board" class="leader"></ol>
-  </section>
-</section>
-```
-
-  </main>
-
-  <button id="musicBtn" style="position:fixed;left:16px;bottom:16px;z-index:9" onclick="toggleMusic()">
-    🔇 الموسيقى: إيقاف
-  </button>
-
-  <script>
-    let player='', level=1, score=0, moves=0, first=null, lock=false, deck=[];
-    const sets=[
-      ['🍎','🚀','🐱','⚽'],
-      ['🍕','🌈','🎸','🦊','👑','🚗'],
-      ['🐼','🌸','🎯','🛸','🍩','🦄','🏀','🎲']
-    ];
-
-    function start() {
-      player=document.getElementById('name').value.trim();
-      if(!player) return alert('اكتب اسمك أولاً');
+      player = auth.user.username;
+      document.getElementById("name").value = player;
       openGame();
+    } catch (error) {
+      console.error(error);
+      alert("لم يتم تسجيل الدخول. جرّب من داخل Pi Browser.");
     }
-
-    function openGame() {
-      localStorage.mmPlayer=player;
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('game').classList.remove('hidden');
-      newLevel();
-    }
-
-    function newLevel() {
-      moves=0; first=null; lock=false;
-      const s=sets[Math.min(level-1,2)];
-      deck=[...s,...s].sort(()=>Math.random()-.5).map((v,i)=>({v,i,open:false,done:false}));
-      render();
-    }
-
-    function render() {
-      document.getElementById('who').textContent=player;
-      document.getElementById('level').textContent=level;
-      document.getElementById('score').textContent=score;
-      document.getElementById('moves').textContent=moves;
-
-      const grid=document.getElementById('grid');
-      grid.innerHTML='';
-
-      deck.forEach((c,i)=>{
-        const b=document.createElement('button');
-        b.className='tile '+((c.open||c.done)?'open':'')+(c.done?' done':'');
-        b.textContent=(c.open||c.done)?c.v:'?';
-        b.onclick=()=>flip(i);
-        grid.appendChild(b);
-      });
-
-      leaders();
-    }
-
-    function flip(i) {
-      const c=deck[i];
-      if(lock||c.open||c.done) return;
-
-      c.open=true;
-
-      if(first===null) {
-        first=i;
-        render();
-        return;
-      }
-
-      moves++;
-      const a=deck[first];
-
-      if(a.v===c.v) {
-        a.done=c.done=true;
-        score+=Math.max(10,50-moves);
-        first=null;
-        render();
-        if(deck.every(x=>x.done)) setTimeout(win,350);
-      } else {
-        lock=true;
-        render();
-        setTimeout(()=>{
-          a.open=c.open=false;
-          first=null;
-          lock=false;
-          render();
-        },700);
-      }
-    }
-
-    function win() {
-      save();
-      if(level<3) {
-        alert('أحسنت! انتقلت للمرحلة التالية.');
-        level++;
-        newLevel();
-      } else {
-        alert('🎉 أنهيت جميع المراحل! نتيجتك '+score);
-        level=1;
-        score=0;
-        newLevel();
-      }
-    }
-
-    function save() {
-      const a=JSON.parse(localStorage.mmLeaders||'[]');
-      a.push({n:player,s:score,d:new Date().toLocaleDateString('ar')});
-      a.sort((x,y)=>y.s-x);
-      localStorage.mmLeaders=JSON.stringify(a.slice(0,10));
-    }
-
-    function leaders() {
-      const a=JSON.parse(localStorage.mmLeaders||'[]');
-      document.getElementById('board').innerHTML=a.length
-        ? a.map(x=>`<li><b>${x.n}</b> — ${x.s} نقطة <span class="note">(${x.d})</span></li>`).join('')
-        : '<li>لا توجد نتائج بعد.</li>';
-    }
-
-    function resetGame(){newLevel()}
-    function logout(){location.reload()}
-
-    let audioCtx, musicTimer, musicOn=false;
-
-    function playTone(freq,duration,when) {
-      const osc=audioCtx.createOscillator();
-      const gain=audioCtx.createGain();
-      osc.type='sine';
-      osc.frequency.value=freq;
-      gain.gain.setValueAtTime(0.06,when);
-      gain.gain.exponentialRampToValueAtTime(0.001,when+duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(when);
-      osc.stop(when+duration);
-    }
-
-    function toggleMusic() {
-      const btn=document.getElementById('musicBtn');
-
-      if(musicOn) {
-        clearInterval(musicTimer);
-        musicOn=false;
-        btn.textContent='🔇 الموسيقى: إيقاف';
-        return;
-      }
-
-      audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
-      audioCtx.resume();
-
-      const notes=[262,330,392,330,294,349,440,349];
-      let i=0;
-
-      const play=()=>{
-        playTone(notes[i%notes.length],0.22,audioCtx.currentTime);
-        i++;
-      };
-
-      play();
-      musicTimer=setInterval(play,300);
-      musicOn=true;
-      btn.textContent='🔊 الموسيقى: تشغيل';
-    }
-
-    Pi.init({version:'2.0',sandbox:true});
-
-    async function loginWithPi() {
-      try {
-        const auth=await Pi.authenticate(
-          ['username'],
-          function onIncompletePaymentFound(payment) {
-            console.log('Incomplete Pi payment:',payment);
-          }
-        );
-
-        player=auth.user.username;
-        document.getElementById('name').value=player;
-        openGame();
-      } catch(error) {
-        console.error('Pi login error:',error);
-        alert('لم يكتمل تسجيل الدخول. افتح اللعبة من Pi Browser ثم جرّب مرة أخرى.');
-      }
-    }
-
-    window.onload=()=>{
-      if(localStorage.mmPlayer) {
-        document.getElementById('name').value=localStorage.mmPlayer;
-      }
-    };
-  </script>
-
+  }
+</script>
 </body>
 </html>

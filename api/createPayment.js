@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         metadata: {}
       })
     });
-
+    
     const data = await response.json();
     return res.status(200).json(data);
 

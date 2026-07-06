@@ -1,55 +1,405 @@
 <!doctype html>
 
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ميموري ماتش</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memory Match</title>
 
   <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui;background:#101827;color:#fff;min-height:100vh}
-    .app{max-width:900px;margin:auto;padding:24px}
-    .card{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:22px;box-shadow:0 10px 30px #0004}
-    h1{margin:0 0 14px;color:#fbbf24}
-    .hidden{display:none}
-    input,button{font:inherit;border-radius:10px;padding:11px;border:0}
-    input{width:100%;margin:7px 0;background:#fff;color:#111}
-    button{background:#fbbf24;color:#111;font-weight:800;cursor:pointer;margin:6px 0}
-    button:hover{filter:brightness(1.08)}
-    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:15px 0}
-    .stats{display:flex;gap:10px;flex-wrap:wrap}
-    .pill{background:#334155;padding:8px 12px;border-radius:999px}
-    .grid{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)}
-    .tile{aspect-ratio:1;background:#334155;border-radius:14px;display:grid;place-items:center;font-size:clamp(25px,7vw,46px);transition:.2s}
-    .tile.open,.tile.done{background:#fff;color:#111}
-    .tile.done{background:#86efac}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .leader li{padding:8px;border-bottom:1px solid #334155}
-    .note{color:#cbd5e1;font-size:.92em}
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #101827;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px #0004;
+    }
+    h1 {
+      margin: 0 0 14px;
+      color: #fbbf24;
+    }
+    .hidden {
+      display: none;
+    }
+    input, button {
+      font: inherit;
+      border-radius: 10px;
+      padding: 11px;
+      border: 0;
+    }
+    input {
+      width: 100%;
+      margin: 7px 0;
+      background: #ffffff;
+      color: #111111;
+    }
+    button {
+      background: #fbbf24;
+      color: #111111;
+      font-weight: 800;
+      cursor: pointer;
+      margin: 6px 0;
+    }
+    button:hover {
+      filter: brightness(1.08);
+    }
+    .bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      background: #334155;
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .tile {
+      aspect-ratio: 1;
+      background: #334155;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: clamp(25px, 7vw, 46px);
+      transition: 0.2s;
+    }
+    .tile.open,
+    .tile.done {
+      background: #ffffff;
+      color: #111111;
+    }
+    .tile.done {
+      background: #86efac;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .leader li {
+      padding: 8px;
+      border-bottom: 1px solid #334155;
+    }
+    .note {
+      color: #cbd5e1;
+      font-size: 0.92em;
+    }
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-<script>
-  Pi.init({ version: "2.0", sandbox: true });
 
-  async function loginWithPi() {
-    try {
-      const auth = await Pi.authenticate(
-        ["username"],
-        function onIncompletePaymentFound(payment) {
-          console.log(payment);
-        }
-      );
+</head>
 
-      player = auth.user.username;
-      document.getElementById("name").value = player;
+<body>
+  <main class="app">
+    <section id="login" class="card">
+      <h1>Memory Match</h1>
+      <p>Match the cards, earn points, and reach the leaderboard.</p>
+
+```
+  <input id="name" maxlength="18" placeholder="Enter player name">
+  <button onclick="start()">Play with Name</button>
+  <button onclick="loginWithPi()">Login with Pi</button>
+
+  <p class="note">Progress and leaderboard are saved on this device.</p>
+</section>
+
+<section id="game" class="hidden">
+  <div class="bar">
+    <h1>Memory Match</h1>
+    <div class="actions">
+      <button onclick="resetGame()">Restart Level</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <span class="pill">Player: <b id="who"></b></span>
+    <span class="pill">Level: <b id="level"></b></span>
+    <span class="pill">Score: <b id="score"></b></span>
+    <span class="pill">Moves: <b id="moves"></b></span>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <section class="card" style="margin-top:18px">
+    <h2>Leaderboard</h2>
+    <ol id="board" class="leader"></ol>
+  </section>
+</section>
+```
+
+  </main>
+
+  <button id="musicBtn" style="position:fixed;left:16px;bottom:16px;z-index:9" onclick="toggleMusic()">
+    Music: Off
+  </button>
+
+  <script>
+    let player = "";
+    let level = 1;
+    let score = 0;
+    let moves = 0;
+    let first = null;
+    let lock = false;
+    let deck = [];
+
+    const sets = [
+      ["A", "B", "C", "D"],
+      ["E", "F", "G", "H", "I", "J"],
+      ["K", "L", "M", "N", "O", "P", "Q", "R"]
+    ];
+
+    function start() {
+      player = document.getElementById("name").value.trim();
+
+      if (!player) {
+        alert("Enter a player name first.");
+        return;
+      }
+
       openGame();
-    } catch (error) {
-      console.error(error);
-      alert("لم يتم تسجيل الدخول. جرّب من داخل Pi Browser.");
     }
-  }
-</script>
+
+    function openGame() {
+      localStorage.mmPlayer = player;
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      newLevel();
+    }
+
+    function newLevel() {
+      moves = 0;
+      first = null;
+      lock = false;
+
+      const symbols = sets[Math.min(level - 1, 2)];
+
+      deck = [...symbols, ...symbols]
+        .sort(() => Math.random() - 0.5)
+        .map((value, index) => ({
+          value,
+          index,
+          open: false,
+          done: false
+        }));
+
+      render();
+    }
+
+    function render() {
+      document.getElementById("who").textContent = player;
+      document.getElementById("level").textContent = level;
+      document.getElementById("score").textContent = score;
+      document.getElementById("moves").textContent = moves;
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      deck.forEach((card, index) => {
+        const button = document.createElement("button");
+
+        button.className =
+          "tile " +
+          ((card.open || card.done) ? "open" : "") +
+          (card.done ? " done" : "");
+
+        button.textContent = (card.open || card.done) ? card.value : "?";
+        button.onclick = () => flip(index);
+
+        grid.appendChild(button);
+      });
+
+      leaders();
+    }
+
+    function flip(index) {
+      const card = deck[index];
+
+      if (lock || card.open || card.done) return;
+
+      card.open = true;
+
+      if (first === null) {
+        first = index;
+        render();
+        return;
+      }
+
+      moves++;
+
+      const firstCard = deck[first];
+
+      if (firstCard.value === card.value) {
+        firstCard.done = true;
+        card.done = true;
+        score += Math.max(10, 50 - moves);
+        first = null;
+        render();
+
+        if (deck.every(item => item.done)) {
+          setTimeout(win, 350);
+        }
+      } else {
+        lock = true;
+        render();
+
+        setTimeout(() => {
+          firstCard.open = false;
+          card.open = false;
+          first = null;
+          lock = false;
+          render();
+        }, 700);
+      }
+    }
+
+    function win() {
+      save();
+
+      if (level < 3) {
+        alert("Level complete. Moving to the next level.");
+        level++;
+        newLevel();
+      } else {
+        alert("Game complete. Final score: " + score);
+        level = 1;
+        score = 0;
+        newLevel();
+      }
+    }
+
+    function save() {
+      const list = JSON.parse(localStorage.mmLeaders || "[]");
+
+      list.push({
+        n: player,
+        s: score,
+        d: new Date().toLocaleDateString("en")
+      });
+
+      list.sort((a, b) => b.s - a.s);
+
+      localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
+    }
+
+    function leaders() {
+      const list = JSON.parse(localStorage.mmLeaders || "[]");
+
+      document.getElementById("board").innerHTML = list.length
+        ? list.map(item =>
+            `<li><b>${item.n}</b> - ${item.s} points <span class="note">(${item.d})</span></li>`
+          ).join("")
+        : "<li>No scores yet.</li>";
+    }
+
+    function resetGame() {
+      newLevel();
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    let audioCtx;
+    let musicTimer;
+    let musicOn = false;
+
+    function playTone(freq, duration, when) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.value = freq;
+
+      gain.gain.setValueAtTime(0.06, when);
+      gain.gain.exponentialRampToValueAtTime(0.001, when + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(when);
+      osc.stop(when + duration);
+    }
+
+    function toggleMusic() {
+      const button = document.getElementById("musicBtn");
+
+      if (musicOn) {
+        clearInterval(musicTimer);
+        musicOn = false;
+        button.textContent = "Music: Off";
+        return;
+      }
+
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx.resume();
+
+      const notes = [262, 330, 392, 330, 294, 349, 440, 349];
+      let index = 0;
+
+      const play = () => {
+        playTone(notes[index % notes.length], 0.22, audioCtx.currentTime);
+        index++;
+      };
+
+      play();
+      musicTimer = setInterval(play, 300);
+      musicOn = true;
+      button.textContent = "Music: On";
+    }
+
+    Pi.init({ version: "2.0", sandbox: true });
+
+    async function loginWithPi() {
+      try {
+        const auth = await Pi.authenticate(
+          ["username"],
+          function onIncompletePaymentFound(payment) {
+            console.log("Incomplete Pi payment:", payment);
+          }
+        );
+
+        player = auth.user.username;
+        document.getElementById("name").value = player;
+        openGame();
+      } catch (error) {
+        console.error("Pi login error:", error);
+        alert("Pi login was not completed. Open the game in Pi Browser and try again.");
+      }
+    }
+
+    window.onload = () => {
+      if (localStorage.mmPlayer) {
+        document.getElementById("name").value = localStorage.mmPlayer;
+      }
+    };
+  </script>
+
 </body>
 </html>

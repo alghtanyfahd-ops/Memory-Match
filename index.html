@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -29,279 +28,225 @@
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
 </head>
 
 <body>
   <main class="app">
+
+    <!-- LOGIN -->
     <section id="login" class="card">
       <h1>Memory Match</h1>
       <p>Match the cards, earn points, and reach the leaderboard.</p>
 
-```
-  <input id="name" maxlength="18" placeholder="Enter player name">
-  <button onclick="start()">Play with Name</button>
-  <button onclick="loginWithPi()">Login with Pi</button>
+      <input id="name" maxlength="18" placeholder="Enter player name">
+      <button onclick="start()">Play with Name</button>
+      <button onclick="loginWithPi()">Login with Pi</button>
 
-  <p class="note">Open this game from Pi Browser for Pi login.</p>
-</section>
+      <p class="note">Open this game from Pi Browser for Pi login.</p>
+    </section>
 
-<section id="game" class="hidden">
-  <div class="bar">
-    <h1>Memory Match</h1>
-    <div class="actions">
-      <button onclick="resetGame()">Restart Level</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  </div>
+    <!-- GAME -->
+    <section id="game" class="hidden">
+      <div class="bar">
+        <h1>Memory Match</h1>
 
-  <div class="stats">
-    <span class="pill">Player: <b id="who"></b></span>
-    <span class="pill">Level: <b id="level"></b></span>
-    <span class="pill">Score: <b id="score"></b></span>
-    <span class="pill">Moves: <b id="moves"></b></span>
-  </div>
+        <div class="actions">
+          <button id="musicBtn">تشغيل الموسيقى 🎵</button>
+          <button onclick="resetGame()">Restart</button>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
 
-  <div id="grid" class="grid"></div>
+      <div class="stats">
+        <span class="pill">Player: <b id="who"></b></span>
+        <span class="pill">Level: <b id="level"></b></span>
+        <span class="pill">Score: <b id="score"></b></span>
+        <span class="pill">Moves: <b id="moves"></b></span>
+      </div>
 
-  <section class="card" style="margin-top:18px">
-    <h2>Leaderboard</h2>
-    <ol id="board" class="leader"></ol>
-  </section>
-</section>
-```
+      <div id="grid" class="grid"></div>
+
+      <section class="card" style="margin-top:18px">
+        <h2>Leaderboard</h2>
+        <ol id="board" class="leader"></ol>
+      </section>
+    </section>
 
   </main>
 
-  <script>
-    let player = "";
-    let level = 1;
-    let score = 0;
-    let moves = 0;
-    let first = null;
-    let lock = false;
-    let deck = [];
+<script>
+/* 🎵 MUSIC (Web Audio API - بدون ملفات) */
+let audioCtx;
+let musicOn = false;
+let musicTimer;
 
-    const sets = [
-      ["A", "B", "C", "D"],
-      ["E", "F", "G", "H", "I", "J"],
-      ["K", "L", "M", "N", "O", "P", "Q", "R"]
-    ];
+function startMusic(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function start() {
-      player = document.getElementById("name").value.trim();
+  function playTone(freq){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-      if (!player) {
-        alert("Enter a player name first.");
-        return;
-      }
+    osc.type = "sine";
+    osc.frequency.value = freq;
 
-      openGame();
-    }
+    gain.gain.value = 0.05;
 
-    function openGame() {
-      localStorage.mmPlayer = player;
-      document.getElementById("login").classList.add("hidden");
-      document.getElementById("game").classList.remove("hidden");
-      newLevel();
-    }
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-    function newLevel() {
-      moves = 0;
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.25);
+  }
+
+  musicTimer = setInterval(()=>{
+    const notes = [220, 262, 330, 392, 523];
+    const n = notes[Math.floor(Math.random()*notes.length)];
+    playTone(n);
+  }, 300);
+}
+
+function stopMusic(){
+  clearInterval(musicTimer);
+  if(audioCtx) audioCtx.close();
+}
+
+document.getElementById("musicBtn").onclick = async ()=>{
+  if(!musicOn){
+    startMusic();
+    musicOn = true;
+    document.getElementById("musicBtn").textContent = "إيقاف الموسيقى 🔇";
+  }else{
+    stopMusic();
+    musicOn = false;
+    document.getElementById("musicBtn").textContent = "تشغيل الموسيقى 🎵";
+  }
+};
+
+/* 🎮 GAME */
+let player = "";
+let level = 1;
+let score = 0;
+let moves = 0;
+let first = null;
+let lock = false;
+let deck = [];
+
+const sets = [
+  ["A","B","C","D"],
+  ["E","F","G","H","I","J"],
+  ["K","L","M","N","O","P","Q","R"]
+];
+
+function start(){
+  player = document.getElementById("name").value.trim();
+  if(!player){ alert("Enter name"); return; }
+  openGame();
+}
+
+function openGame(){
+  localStorage.mmPlayer = player;
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  newLevel();
+}
+
+function newLevel(){
+  moves = 0;
+  first = null;
+  lock = false;
+
+  const symbols = sets[Math.min(level-1,2)];
+
+  deck = [...symbols,...symbols]
+    .sort(()=>Math.random()-0.5)
+    .map(v=>({v,open:false,done:false}));
+
+  render();
+}
+
+function render(){
+  document.getElementById("who").textContent = player;
+  document.getElementById("level").textContent = level;
+  document.getElementById("score").textContent = score;
+  document.getElementById("moves").textContent = moves;
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  deck.forEach((c,i)=>{
+    const b = document.createElement("button");
+    b.className = "tile " + ((c.open||c.done)?"open":"") + (c.done?" done":"");
+    b.textContent = (c.open||c.done)?c.v:"?";
+    b.onclick = ()=>flip(i);
+    grid.appendChild(b);
+  });
+
+  leaders();
+}
+
+function flip(i){
+  const c = deck[i];
+  if(lock||c.open||c.done) return;
+
+  c.open = true;
+
+  if(first === null){
+    first = i;
+    render();
+    return;
+  }
+
+  moves++;
+
+  const f = deck[first];
+
+  if(f.v === c.v){
+    f.done = c.done = true;
+    score += 10;
+    first = null;
+  }else{
+    lock = true;
+    setTimeout(()=>{
+      f.open = c.open = false;
       first = null;
       lock = false;
-
-      const symbols = sets[Math.min(level - 1, 2)];
-
-      deck = [...symbols, ...symbols]
-        .sort(() => Math.random() - 0.5)
-        .map(value => ({
-          value,
-          open: false,
-          done: false
-        }));
-
       render();
-    }
+    },600);
+  }
 
-    function render() {
-      document.getElementById("who").textContent = player;
-      document.getElementById("level").textContent = level;
-      document.getElementById("score").textContent = score;
-      document.getElementById("moves").textContent = moves;
+  render();
+}
 
-      const grid = document.getElementById("grid");
-      grid.innerHTML = "";
+function leaders(){
+  const list = JSON.parse(localStorage.mmLeaders || "[]");
+  document.getElementById("board").innerHTML =
+    list.length ? list.map(x=>`<li>${x.n} - ${x.s}</li>`).join("") : "<li>No scores</li>";
+}
 
-      deck.forEach((card, index) => {
-        const button = document.createElement("button");
+function resetGame(){ newLevel(); }
+function logout(){ location.reload(); }
 
-        button.className =
-          "tile " +
-          ((card.open || card.done) ? "open" : "") +
-          (card.done ? " done" : "");
+/* Pi login */
+Pi.init({ version:"2.0", sandbox:true });
 
-        button.textContent = (card.open || card.done) ? card.value : "?";
-        button.onclick = () => flip(index);
+async function loginWithPi(){
+  try{
+    const auth = await Pi.authenticate(["username"]);
+    player = auth.user.username;
+    document.getElementById("name").value = player;
+    openGame();
+  }catch(e){
+    alert("Pi login error");
+  }
+}
 
-        grid.appendChild(button);
-      });
-
-      leaders();
-    }
-
-    function flip(index) {
-      const card = deck[index];
-
-      if (lock || card.open || card.done) {
-        return;
-      }
-
-      card.open = true;
-
-      if (first === null) {
-        first = index;
-        render();
-        return;
-      }
-
-      moves++;
-
-      const firstCard = deck[first];
-
-      if (firstCard.value === card.value) {
-        firstCard.done = true;
-        card.done = true;
-        score += Math.max(10, 50 - moves);
-        first = null;
-        render();
-
-        if (deck.every(item => item.done)) {
-          setTimeout(win, 350);
-        }
-      } else {
-        lock = true;
-        render();
-
-        setTimeout(() => {
-          firstCard.open = false;
-          card.open = false;
-          first = null;
-          lock = false;
-          render();
-        }, 700);
-      }
-    }
-
-    function win() {
-      save();
-
-      if (level < 3) {
-        alert("Level complete.");
-        level++;
-        newLevel();
-      } else {
-        alert("Game complete. Final score: " + score);
-        level = 1;
-        score = 0;
-        newLevel();
-      }
-    }
-
-    function save() {
-      const list = JSON.parse(localStorage.mmLeaders || "[]");
-
-      list.push({
-        n: player,
-        s: score,
-        d: new Date().toLocaleDateString("en")
-      });
-
-      list.sort((a, b) => b.s - a.s);
-      localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
-    }
-
-    function leaders() {
-      const list = JSON.parse(localStorage.mmLeaders || "[]");
-
-      document.getElementById("board").innerHTML = list.length
-        ? list.map(item => `<li><b>${item.n}</b> - ${item.s} points</li>`).join("")
-        : "<li>No scores yet.</li>";
-    }
-    
-    function resetGame() {
-      newLevel();
-    }
-
-    function logout() {
-      location.reload();
-    }
-
-    Pi.init({
-      version: "2.0",
-      sandbox: true
-    });
-
-    async function loginWithPi() {
-      try {
-        const auth = await Pi.authenticate(
-          ["username"],
-          function onIncompletePaymentFound(payment) {
-            console.log("Incomplete Pi payment:", payment);
-          }
-        );
-
-        player = auth.user.username;
-        document.getElementById("name").value = player;
-        openGame();
-      } catch (error) {
-        console.error("Pi login error:", error);
-        alert("Pi login was not completed. Open the game in Pi Browser and try again.");
-      }
-    }
-
-    window.onload = () => {
-      if (localStorage.mmPlayer) {
-        document.getElementById("name").value = localStorage.mmPlayer;
-      }
-    };
-  </script>
-<audio id="bgMusic" loop>
-  <source src="assets/music/background.mp3" type="audio/mpeg">
-</audio>
-
-<button id="musicButton">تشغيل الموسيقى</button>
-
-<script>
-  const music = document.getElementById("bgMusic");
-  const button = document.getElementById("musicButton");
-
-  button.addEventListener("click", () => {
-    music.play();
-    button.style.display = "none";
-  });
+window.onload = ()=>{
+  if(localStorage.mmPlayer){
+    document.getElementById("name").value = localStorage.mmPlayer;
+  }
+};
 </script>
-<audio id="bgMusic" loop preload="auto">
-  <source src="assets/music/background.mp3" type="audio/mpeg">
-</audio>
 
-<script>
-  const music = document.getElementById("bgMusic");
-  const button = document.getElementById("musicButton");
-
-  button.addEventListener("click", async () => {
-    try {
-      if (music.paused) {
-        await music.play();
-        button.textContent = "إيقاف الموسيقى";
-      } else {
-        music.pause();
-        button.textContent = "تشغيل الموسيقى";
-      }
-    } catch (error) {
-      console.error("تحقق من مسار ملف الموسيقى:", error);
-    }
-  });
-</script>
 </body>
 </html>

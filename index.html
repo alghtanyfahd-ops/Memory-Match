@@ -400,6 +400,22 @@
       }
     };
   </script>
+<script>
+async function pay() {
+  try {
+    const res = await fetch("/api/createPayment", {
+      method: "POST"
+    });
 
+    const data = await res.json();
+    console.log(data);
+
+    alert("Transaction started. Complete it in Pi Browser.");
+  } catch (e) {
+    console.error(e);
+    alert("Payment failed");
+  }
+}
+</script>
 </body>
 </html>

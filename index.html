@@ -1,10 +1,11 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Memory Match</title>
-  
+
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: system-ui, sans-serif; background: #101827; color: #fff; min-height: 100vh; }
@@ -28,68 +29,66 @@
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
 </head>
 
 <body>
   <main class="app">
-
-    <!-- LOGIN -->
     <section id="login" class="card">
       <h1>Memory Match</h1>
-      <p>Match the cards, earn points, and reach the leaderboard.</p>
+      <p>Match the cards, earn points, and reach level 70.</p>
 
-      <input id="name" maxlength="18" placeholder="Enter player name">
-      <button onclick="start()">Play with Name</button>
-      <button onclick="loginWithPi()">Login with Pi</button>
+```
+  <input id="name" maxlength="18" placeholder="Enter player name">
+  <button onclick="start()">Play with Name</button>
+  <button onclick="loginWithPi()">Login with Pi</button>
 
-      <p class="note">Open this game from Pi Browser for Pi login.</p>
-    </section>
+  <p class="note">Open this game from Pi Browser for Pi login.</p>
+</section>
 
-    <!-- GAME -->
-    <section id="game" class="hidden">
-      <div class="bar">
-        <h1>Memory Match</h1>
+<section id="game" class="hidden">
+  <div class="bar">
+    <h1>Memory Match</h1>
 
-        <div class="actions">
-          <button id="musicBtn">تشغيل الموسيقى 🎵</button>
-          <button onclick="resetGame()">Restart</button>
-          <button onclick="logout()">Logout</button>
-        </div>
-      </div>
+    <div class="actions">
+      <button id="musicBtn">تشغيل الموسيقى 🎵</button>
+      <button onclick="resetGame()">Restart Level</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
 
-      <div class="stats">
-        <span class="pill">Player: <b id="who"></b></span>
-        <span class="pill">Level: <b id="level"></b></span>
-        <span class="pill">Score: <b id="score"></b></span>
-        <span class="pill">Moves: <b id="moves"></b></span>
-      </div>
+  <div class="stats">
+    <span class="pill">Player: <b id="who"></b></span>
+    <span class="pill">Level: <b id="level"></b> / 70</span>
+    <span class="pill">Score: <b id="score"></b></span>
+    <span class="pill">Moves: <b id="moves"></b></span>
+  </div>
 
-      <div id="grid" class="grid"></div>
+  <div id="grid" class="grid"></div>
 
-      <section class="card" style="margin-top:18px">
-        <h2>Leaderboard</h2>
-        <ol id="board" class="leader"></ol>
-      </section>
-    </section>
+  <section class="card" style="margin-top:18px">
+    <h2>Leaderboard</h2>
+    <ol id="board" class="leader"></ol>
+  </section>
+</section>
+```
 
   </main>
 
 <script>
-/* 🎵 MUSIC (Web Audio API - بدون ملفات) */
 let audioCtx;
 let musicOn = false;
 let musicTimer;
 
-function startMusic(){
+function startMusic() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  function playTone(freq){
+  function playTone(freq) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
     osc.type = "sine";
     osc.frequency.value = freq;
-
     gain.gain.value = 0.05;
 
     osc.connect(gain);
@@ -99,31 +98,39 @@ function startMusic(){
     osc.stop(audioCtx.currentTime + 0.25);
   }
 
-  musicTimer = setInterval(()=>{
+  musicTimer = setInterval(() => {
     const notes = [220, 262, 330, 392, 523];
-    const n = notes[Math.floor(Math.random()*notes.length)];
-    playTone(n);
+    playTone(notes[Math.floor(Math.random() * notes.length)]);
   }, 300);
 }
 
-function stopMusic(){
+function stopMusic() {
   clearInterval(musicTimer);
-  if(audioCtx) audioCtx.close();
+  if (audioCtx) audioCtx.close();
 }
 
-document.getElementById("musicBtn").onclick = async ()=>{
-  if(!musicOn){
+document.getElementById("musicBtn").onclick = () => {
+  if (!musicOn) {
     startMusic();
     musicOn = true;
     document.getElementById("musicBtn").textContent = "إيقاف الموسيقى 🔇";
-  }else{
+  } else {
     stopMusic();
     musicOn = false;
     document.getElementById("musicBtn").textContent = "تشغيل الموسيقى 🎵";
   }
 };
 
-/* 🎮 GAME */
+/* GAME */
+const MAX_LEVEL = 70;
+const SYMBOLS = [
+  "A","B","C","D","E","F","G","H","I","J",
+  "K","L","M","N","O","P","Q","R","S","T",
+  "U","V","W","X","Y","Z","1","2","3","4",
+  "5","6","7","8","9","!","@","#","$","%",
+  "&","*","+","?","♥","★","◆","●","▲","☀"
+];
+
 let player = "";
 let level = 1;
 let score = 0;
@@ -132,40 +139,63 @@ let first = null;
 let lock = false;
 let deck = [];
 
-const sets = [
-  ["A","B","C","D"],
-  ["E","F","G","H","I","J"],
-  ["K","L","M","N","O","P","Q","R"]
-];
+function getPairsForLevel() {
+  return Math.min(4 + Math.floor((level - 1) / 5), 12);
+}
 
-function start(){
+function start() {
   player = document.getElementById("name").value.trim();
-  if(!player){ alert("Enter name"); return; }
+  if (!player) {
+    alert("Enter name");
+    return;
+  }
+
+  level = 1;
+  score = 0;
   openGame();
 }
 
-function openGame(){
+function openGame() {
   localStorage.mmPlayer = player;
+  loadProgress();
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
   newLevel();
 }
 
-function newLevel(){
+function loadProgress() {
+  const saved = JSON.parse(localStorage.mmProgress || "null");
+
+  if (saved && saved.player === player) {
+    level = Math.min(saved.level || 1, MAX_LEVEL);
+    score = saved.score || 0;
+  }
+}
+
+function saveProgress() {
+  localStorage.mmProgress = JSON.stringify({
+    player: player,
+    level: level,
+    score: score
+  });
+}
+
+function newLevel() {
   moves = 0;
   first = null;
   lock = false;
 
-  const symbols = sets[Math.min(level-1,2)];
+  const pairs = getPairsForLevel();
+  const symbols = SYMBOLS.slice(0, pairs);
 
-  deck = [...symbols,...symbols]
-    .sort(()=>Math.random()-0.5)
-    .map(v=>({v,open:false,done:false}));
+  deck = [...symbols, ...symbols]
+    .sort(() => Math.random() - 0.5)
+    .map(v => ({ v, open: false, done: false }));
 
   render();
 }
 
-function render(){
+function render() {
   document.getElementById("who").textContent = player;
   document.getElementById("level").textContent = level;
   document.getElementById("score").textContent = score;
@@ -174,75 +204,116 @@ function render(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  deck.forEach((c,i)=>{
+  deck.forEach((c, i) => {
     const b = document.createElement("button");
-    b.className = "tile " + ((c.open||c.done)?"open":"") + (c.done?" done":"");
-    b.textContent = (c.open||c.done)?c.v:"?";
-    b.onclick = ()=>flip(i);
+    b.className = "tile " + ((c.open || c.done) ? "open" : "") + (c.done ? " done" : "");
+    b.textContent = (c.open || c.done) ? c.v : "?";
+    b.onclick = () => flip(i);
     grid.appendChild(b);
   });
 
   leaders();
 }
 
-function flip(i){
+function flip(i) {
   const c = deck[i];
-  if(lock||c.open||c.done) return;
+  if (lock || c.open || c.done) return;
 
   c.open = true;
 
-  if(first === null){
+  if (first === null) {
     first = i;
     render();
     return;
   }
 
   moves++;
-
   const f = deck[first];
 
-  if(f.v === c.v){
-    f.done = c.done = true;
-    score += 10;
+  if (f.v === c.v) {
+    f.done = true;
+    c.done = true;
+    score += 10 + level;
     first = null;
-  }else{
+
+    if (deck.every(card => card.done)) {
+      lock = true;
+      saveProgress();
+
+      setTimeout(() => {
+        if (level >= MAX_LEVEL) {
+          addLeader();
+          alert("Congratulations! You completed all 70 levels.");
+          level = 1;
+          score = 0;
+          saveProgress();
+          newLevel();
+        } else {
+          level++;
+          saveProgress();
+          alert("Level complete! Welcome to level " + level);
+          newLevel();
+        }
+      }, 500);
+    }
+  } else {
     lock = true;
-    setTimeout(()=>{
-      f.open = c.open = false;
+
+    setTimeout(() => {
+      f.open = false;
+      c.open = false;
       first = null;
       lock = false;
       render();
-    },600);
+    }, 600);
   }
 
   render();
 }
 
-function leaders(){
+function addLeader() {
   const list = JSON.parse(localStorage.mmLeaders || "[]");
-  document.getElementById("board").innerHTML =
-    list.length ? list.map(x=>`<li>${x.n} - ${x.s}</li>`).join("") : "<li>No scores</li>";
+  list.push({ n: player, s: score });
+  list.sort((a, b) => b.s - a.s);
+  localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
 }
 
-function resetGame(){ newLevel(); }
-function logout(){ location.reload(); }
+function leaders() {
+  const list = JSON.parse(localStorage.mmLeaders || "[]");
+
+  document.getElementById("board").innerHTML =
+    list.length
+      ? list.map(x => `<li>${x.n} - ${x.s}</li>`).join("")
+      : "<li>No scores</li>";
+}
+
+function resetGame() {
+  newLevel();
+}
+
+function logout() {
+  saveProgress();
+  location.reload();
+}
 
 /* Pi login */
-Pi.init({ version:"2.0", sandbox:true });
+Pi.init({ version: "2.0", sandbox: true });
 
-async function loginWithPi(){
-  try{
+async function loginWithPi() {
+  try {
     const auth = await Pi.authenticate(["username"]);
     player = auth.user.username;
     document.getElementById("name").value = player;
+    level = 1;
+    score = 0;
     openGame();
-  }catch(e){
+  } catch (e) {
     alert("Pi login error");
   }
 }
 
-window.onload = ()=>{
-  if(localStorage.mmPlayer){
+window.onload = () => {
+  if (localStorage.mmPlayer) {
     document.getElementById("name").value = localStorage.mmPlayer;
   }
 };

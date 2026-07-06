@@ -268,17 +268,7 @@
             onCancel: function (paymentId) {
               console.log("Payment canceled:", paymentId);
               alert("Payment canceled.");
-            },
-
-            onError: function (error) {
-              console.error("Pi payment error:", error);
-              alert("Payment error.");
-            }
-          }
-        );
-      } catch (error) {
-        console.error("Payment start error:", error);
-        alert("Could not start payment.");
+            
       }
     }
 

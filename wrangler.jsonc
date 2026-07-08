@@ -1,1 +1,9 @@
-
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "royal-boat-5bf7",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-08",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}

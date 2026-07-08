@@ -1,9 +1,25 @@
+
 import * as StellarSdk from "@stellar/stellar-sdk";
 
 const HORIZON = "https://horizon-testnet.stellar.org";
 
 export default {
   async fetch(request, env) {
+
+    const url = new URL(request.url);
+
+    // Pi Domain Validation
+    if (request.method === "GET" && url.pathname === "/validation-key.txt") {
+      return new Response(
+        "ce0c45ed75eee0b02640c20964969c",
+        {
+          headers: {
+            "Content-Type": "text/plain"
+          }
+        }
+      );
+    }
+
     if (request.method !== "POST") {
       return new Response(
         JSON.stringify({ error: "POST only" }),

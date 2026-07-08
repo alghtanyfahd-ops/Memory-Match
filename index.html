@@ -12,11 +12,13 @@
     .app { max-width: 900px; margin: auto; padding: 24px; }
     .card { background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px #0004; }
     h1 { margin: 0 0 14px; color: #fbbf24; }
+    h2 { color: #fbbf24; }
     .hidden { display: none; }
     input, button { font: inherit; border-radius: 10px; padding: 11px; border: 0; }
-    input { width: 100%; margin: 7px 0; background: #fff; color: #111; }
+    input { width: 100%; margin: 7px 0; background: #fff; color: #111; direction: ltr; text-align: left; }
     button { background: #fbbf24; color: #111; font-weight: 800; cursor: pointer; margin: 6px 0; }
     button:hover { filter: brightness(1.08); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
     .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
     .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
@@ -26,6 +28,8 @@
     .tile.done { background: #86efac; }
     .leader li { padding: 8px; border-bottom: 1px solid #334155; }
     .note { color: #cbd5e1; font-size: .92em; }
+    .reward-status { min-height: 24px; color: #fde68a; margin-top: 8px; }
+    .wallet-box { margin-top: 18px; }
   </style>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -38,6 +42,7 @@
       <h1>لعبة مطابقة الذاكرة</h1>
       <p>طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.</p>
 
+```
   <input id="name" maxlength="18" placeholder="اكتب اسم اللاعب">
   <button onclick="start()">ابدأ بالاسم</button>
   <button onclick="loginWithPi()">تسجيل الدخول عبر Pi</button>
@@ -64,6 +69,17 @@
     <span class="pill">المربعات: <b id="tiles"></b></span>
   </div>
 
+  <section class="card wallet-box">
+    <h2>محفظة Stellar ومكافأة MGC</h2>
+    <p class="note">أدخل عنوان محفظة Stellar الذي يبدأ بحرف G، ويجب أن تكون أضفت Trustline لعملة MGC مسبقًا.</p>
+
+    <input id="stellarAddress" maxlength="56" placeholder="G... عنوان محفظة Stellar">
+    <button onclick="saveWallet()">حفظ عنوان المحفظة</button>
+    <button id="claimBtn" onclick="claimReward()" disabled>استلم مكافأة المستوى</button>
+
+    <div id="rewardStatus" class="reward-status"></div>
+  </section>
+
   <div id="grid" class="grid"></div>
 
   <section class="card" style="margin-top:18px">
@@ -71,10 +87,13 @@
     <ol id="board" class="leader"></ol>
   </section>
 </section>
+```
 
   </main>
 
 <script>
+const WORKER_URL = "https://royal-boat-5bf7.alghtanyfahd.workers.dev";
+
 /* موسيقى هادئة باستخدام Web Audio API */
 let audioCtx;
 let musicOn = false;
@@ -149,9 +168,9 @@ let moves = 0;
 let first = null;
 let lock = false;
 let deck = [];
+let completedLevel = null;
 
 function getPairsForLevel() {
-  /* يبدأ بـ 4 أزواج ويزداد زوج واحد كل مستويين حتى 30 زوجًا */
   return Math.min(4 + Math.floor((level - 1) / 2), 30);
 }
 
@@ -183,6 +202,8 @@ function openGame() {
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
 
+  document.getElementById("stellarAddress").value = localStorage.mmStellarAddress || "";
+  updateClaimButton();
   newLevel();
 }
 
@@ -207,6 +228,9 @@ function newLevel() {
   moves = 0;
   first = null;
   lock = false;
+  completedLevel = null;
+  document.getElementById("rewardStatus").textContent = "";
+  updateClaimButton();
 
   const pairs = getPairsForLevel();
   const symbols = SYMBOLS.slice(0, pairs);
@@ -264,21 +288,18 @@ function flip(i) {
 
     if (deck.every(card => card.done)) {
       lock = true;
+      completedLevel = level;
       saveProgress();
+      updateClaimButton();
+      document.getElementById("rewardStatus").textContent =
+        "أكملت المستوى " + completedLevel + ". يمكنك استلام المكافأة الآن.";
 
       setTimeout(() => {
         if (level >= MAX_LEVEL) {
           addLeader();
           alert("مبروك! أكملت جميع المستويات الـ 70.");
-          level = 1;
-          score = 0;
-          saveProgress();
-          newLevel();
         } else {
-          level++;
-          saveProgress();
-          alert("أكملت المستوى! انتقلت إلى المستوى " + level);
-          newLevel();
+          alert("أكملت المستوى " + completedLevel + ". استلم المكافأة ثم ابدأ المستوى التالي.");
         }
       }, 600);
     }
@@ -295,6 +316,112 @@ function flip(i) {
   }
 
   render();
+}
+
+function saveWallet() {
+  const address = document.getElementById("stellarAddress").value.trim();
+
+  if (!/^G[A-Z2-7]{55}$/.test(address)) {
+    alert("عنوان Stellar غير صحيح. يجب أن يبدأ بحرف G ويتكون من 56 حرفًا.");
+    return;
+  }
+
+  localStorage.mmStellarAddress = address;
+  document.getElementById("rewardStatus").textContent = "تم حفظ عنوان المحفظة.";
+  updateClaimButton();
+}
+
+function getClaimedLevels() {
+  return JSON.parse(localStorage.mmClaimedLevels || "[]");
+}
+
+function updateClaimButton() {
+  const button = document.getElementById("claimBtn");
+  const address = document.getElementById("stellarAddress").value.trim();
+  const claimed = getClaimedLevels();
+
+  const canClaim =
+    completedLevel !== null &&
+    /^G[A-Z2-7]{55}$/.test(address) &&
+    !claimed.includes(completedLevel);
+
+  button.disabled = !canClaim;
+
+  if (completedLevel !== null && claimed.includes(completedLevel)) {
+    document.getElementById("rewardStatus").textContent =
+      "تم استلام مكافأة هذا المستوى مسبقًا على هذا الجهاز.";
+  }
+}
+
+async function claimReward() {
+  const stellarAddress = document.getElementById("stellarAddress").value.trim();
+
+  if (!completedLevel) {
+    alert("أكمل المستوى أولًا.");
+    return;
+  }
+
+  if (!/^G[A-Z2-7]{55}$/.test(stellarAddress)) {
+    alert("احفظ عنوان محفظة Stellar صحيحًا أولًا.");
+    return;
+  }
+
+  const claimed = getClaimedLevels();
+
+  if (claimed.includes(completedLevel)) {
+    alert("تم استلام مكافأة هذا المستوى مسبقًا.");
+    return;
+  }
+
+  const button = document.getElementById("claimBtn");
+  button.disabled = true;
+  document.getElementById("rewardStatus").textContent = "جارٍ إرسال مكافأة MGC...";
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        stellarAddress: stellarAddress,
+        level: completedLevel,
+        proof: {
+          player: player,
+          score: score,
+          moves: moves,
+          completedAt: new Date().toISOString()
+        }
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || "تعذر إرسال المكافأة.");
+    }
+
+    claimed.push(completedLevel);
+    localStorage.mmClaimedLevels = JSON.stringify(claimed);
+
+    document.getElementById("rewardStatus").textContent =
+      "تم إرسال " + data.amount + " MGC بنجاح. رقم العملية: " + data.hash;
+
+    if (completedLevel >= MAX_LEVEL) {
+      level = 1;
+      score = 0;
+      saveProgress();
+      newLevel();
+    } else {
+      level++;
+      saveProgress();
+      newLevel();
+    }
+  } catch (error) {
+    document.getElementById("rewardStatus").textContent =
+      "فشل إرسال المكافأة: " + error.message;
+    updateClaimButton();
+  }
 }
 
 function addLeader() {
@@ -341,6 +468,10 @@ async function loginWithPi() {
 window.onload = () => {
   if (localStorage.mmPlayer) {
     document.getElementById("name").value = localStorage.mmPlayer;
+  }
+
+  if (localStorage.mmStellarAddress) {
+    document.getElementById("stellarAddress").value = localStorage.mmStellarAddress;
   }
 };
 </script>

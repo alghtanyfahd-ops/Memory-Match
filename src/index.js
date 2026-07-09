@@ -6,7 +6,6 @@ async fetch(request) {
 const url = new URL(request.url);
 
 ```
-// Pi Domain Validation
 if (request.method === "GET" && url.pathname === "/validation-key.txt") {
   return new Response(PI_VALIDATION_KEY, {
     headers: {
@@ -15,51 +14,11 @@ if (request.method === "GET" && url.pathname === "/validation-key.txt") {
   });
 }
 
-if (request.method !== "POST") {
-  return new Response(
-    JSON.stringify({ ok: false, error: "POST only" }),
-    {
-      status: 405,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      }
-    }
-  );
-}
-
-try {
-  const { level, proof } = await request.json();
-
-  if (!proof) {
-    throw new Error("بيانات الفوز مفقودة");
+return new Response("Memory Match API is running", {
+  headers: {
+    "Content-Type": "text/plain; charset=utf-8"
   }
-
-  return new Response(
-    JSON.stringify({
-      ok: true,
-      level,
-      message: "تم تسجيل الفوز. مكافآت Stellar والمحفظة معطلتان."
-    }),
-    {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      }
-    }
-  );
-} catch (error) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: error.message || "حدث خطأ غير متوقع"
-    }),
-    {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      }
-    }
-  );
-}
+});
 ```
 
 }

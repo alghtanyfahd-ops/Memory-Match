@@ -1,120 +1,262 @@
 <!doctype html>
 
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>لعبة مطابقة الذاكرة</title>
 
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: #101827; color: #fff; min-height: 100vh; }
-    .app { max-width: 900px; margin: auto; padding: 24px; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px #0004; }
-    h1 { margin: 0 0 14px; color: #fbbf24; }
-    h2 { color: #fbbf24; }
-    .hidden { display: none; }
-    input, button { font: inherit; border-radius: 10px; padding: 11px; border: 0; }
-    input { width: 100%; margin: 7px 0; background: #fff; color: #111; direction: ltr; text-align: left; }
-    button { background: #fbbf24; color: #111; font-weight: 800; cursor: pointer; margin: 6px 0; }
-    button:hover { filter: brightness(1.08); }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
-    .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
-    .grid { display: grid; gap: 10px; }
-    .tile { aspect-ratio: 1; background: #334155; border-radius: 14px; display: grid; place-items: center; font-size: clamp(22px, 6vw, 46px); }
-    .tile.open, .tile.done { background: #fff; color: #111; }
-    .tile.done { background: #86efac; }
-    .leader li { padding: 8px; border-bottom: 1px solid #334155; }
-    .note { color: #cbd5e1; font-size: .92em; }
-    .reward-status { min-height: 24px; color: #fde68a; margin-top: 8px; }
-    .wallet-box { margin-top: 18px; }
-  </style>
+    * {
+      box-sizing: border-box;
+    }
 
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #101827;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px #0004;
+    }
+
+    h1,
+    h2 {
+      color: #fbbf24;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input,
+    button {
+      font: inherit;
+      border-radius: 10px;
+      padding: 11px;
+      border: 0;
+    }
+
+    input {
+      width: 100%;
+      margin: 7px 0;
+      background: #fff;
+      color: #111;
+    }
+
+    button {
+      background: #fbbf24;
+      color: #111;
+      font-weight: 800;
+      cursor: pointer;
+      margin: 6px 0;
+    }
+
+    .bar,
+    .stats,
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bar {
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+
+    .pill {
+      background: #334155;
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tile {
+      aspect-ratio: 1;
+      background: #334155;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: clamp(22px, 6vw, 46px);
+    }
+
+    .tile.open,
+    .tile.done {
+      background: #fff;
+      color: #111;
+    }
+
+    .tile.done {
+      background: #86efac;
+    }
+
+    .leader li {
+      padding: 8px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .note {
+      color: #cbd5e1;
+    }
+  </style>
 
 </head>
 
 <body>
-  <main class="app">
-    <section id="login" class="card">
-      <h1>لعبة مطابقة الذاكرة</h1>
-      <p>طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.</p>
 
-```
+<main class="app">
+
+<section id="login" class="card">
+
+  <h1>لعبة مطابقة الذاكرة</h1>
+
+  <p>
+    طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.
+  </p>
+
   <input id="name" maxlength="18" placeholder="اكتب اسم اللاعب">
-  <button onclick="start()">ابدأ بالاسم</button>
-  <button onclick="loginWithPi()">تسجيل الدخول عبر Pi</button>
 
-  <p class="note">استخدم Pi Browser لتسجيل الدخول عبر Pi.</p>
+  <button onclick="start()">
+    ابدأ اللعبة
+  </button>
+
 </section>
 
 <section id="game" class="hidden">
-  <div class="bar">
-    <h1>لعبة مطابقة الذاكرة</h1>
 
-    <div class="actions">
-      <button id="musicBtn">تشغيل موسيقى هادئة 🎵</button>
-      <button onclick="resetGame()">إعادة المستوى</button>
-      <button onclick="logout()">خروج</button>
-    </div>
+  <div class="bar">
+
+```
+<h1>
+  لعبة مطابقة الذاكرة
+</h1>
+
+<div class="actions">
+
+  <button id="musicBtn">
+    تشغيل موسيقى هادئة 🎵
+  </button>
+
+  <button onclick="resetGame()">
+    إعادة المستوى
+  </button>
+
+  <button onclick="logout()">
+    خروج
+  </button>
+
+</div>
+```
+
   </div>
 
   <div class="stats">
-    <span class="pill">اللاعب: <b id="who"></b></span>
-    <span class="pill">المستوى: <b id="level"></b> / 70</span>
-    <span class="pill">النقاط: <b id="score"></b></span>
-    <span class="pill">الحركات: <b id="moves"></b></span>
-    <span class="pill">المربعات: <b id="tiles"></b></span>
+
+```
+<span class="pill">
+  اللاعب:
+  <b id="who"></b>
+</span>
+
+<span class="pill">
+  المستوى:
+  <b id="level"></b> / 70
+</span>
+
+<span class="pill">
+  النقاط:
+  <b id="score"></b>
+</span>
+
+<span class="pill">
+  الحركات:
+  <b id="moves"></b>
+</span>
+
+<span class="pill">
+  المربعات:
+  <b id="tiles"></b>
+</span>
+```
+
   </div>
-
-  <section class="card wallet-box">
-    <h2>محفظة Stellar ومكافأة MGC</h2>
-    <p class="note">أدخل عنوان محفظة Stellar الذي يبدأ بحرف G، ويجب أن تكون أضفت Trustline لعملة MGC مسبقًا.</p>
-
-    <input id="stellarAddress" maxlength="56" placeholder="G... عنوان محفظة Stellar">
-    <button onclick="saveWallet()">حفظ عنوان المحفظة</button>
-    <button id="piPayBtn" onclick="testPiPayment()">دفع تجريبي 0.01 Pi</button>
-    <button id="claimBtn" onclick="claimReward()" disabled>استلم مكافأة المستوى</button>
-
-    <div id="rewardStatus" class="reward-status"></div>
-  </section>
 
   <div id="grid" class="grid"></div>
 
   <section class="card" style="margin-top:18px">
-    <h2>لوحة المتصدرين</h2>
-    <ol id="board" class="leader"></ol>
-  </section>
-</section>
+
+```
+<h2>
+  لوحة المتصدرين
+</h2>
+
+<ol id="board" class="leader"></ol>
 ```
 
-  </main>
-  
-<script>
-const WORKER_URL = "https://royal-boat-5bf7.alghtanyfahd.workers.dev";
+  </section>
 
-/* موسيقى هادئة باستخدام Web Audio API */
+</section>
+
+</main>
+<script>
+
 let audioCtx;
 let musicOn = false;
 let musicTimer;
 let musicStep = 0;
 
 function startMusic() {
+
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  const melody = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 246.94, 293.66];
+  const melody = [
+    261.63,293.66,329.63,392.00,
+    329.63,293.66,246.94,293.66
+  ];
 
   function playSoftTone(freq) {
+
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
     osc.type = "sine";
     osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 0.08);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+
+    gain.gain.setValueAtTime(
+      0.001,
+      audioCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.035,
+      audioCtx.currentTime + 0.08
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioCtx.currentTime + 0.65
+    );
 
     osc.connect(gain);
     gain.connect(audioCtx.destination);
@@ -123,405 +265,421 @@ function startMusic() {
     osc.stop(audioCtx.currentTime + 0.7);
   }
 
+
   playSoftTone(melody[musicStep]);
+
+
   musicTimer = setInterval(() => {
-    musicStep = (musicStep + 1) % melody.length;
+
+    musicStep =
+      (musicStep + 1) % melody.length;
+
     playSoftTone(melody[musicStep]);
-  }, 700);
+
+  },700);
+
 }
 
-function stopMusic() {
+
+function stopMusic(){
+
   clearInterval(musicTimer);
-  if (audioCtx) {
+
+  if(audioCtx){
+
     audioCtx.close();
-    audioCtx = null;
+
+    audioCtx=null;
+
   }
+
 }
+
 
 document.getElementById("musicBtn").onclick = () => {
-  if (!musicOn) {
+
+  if(!musicOn){
+
     startMusic();
-    musicOn = true;
-    document.getElementById("musicBtn").textContent = "إيقاف الموسيقى 🔇";
-  } else {
+
+    musicOn=true;
+
+    document.getElementById("musicBtn").textContent =
+      "إيقاف الموسيقى 🔇";
+
+  }else{
+
     stopMusic();
-    musicOn = false;
-    document.getElementById("musicBtn").textContent = "تشغيل موسيقى هادئة 🎵";
+
+    musicOn=false;
+
+    document.getElementById("musicBtn").textContent =
+      "تشغيل موسيقى هادئة 🎵";
+
   }
+
 };
 
-/* اللعبة */
+
+
 const MAX_LEVEL = 70;
 
+
 const SYMBOLS = [
-  "🐶","🐱","🐭","🐰","🦊","🐼","🐨","🐯","🦁","🐸",
-  "🐵","🐷","🐮","🐔","🐧","🦄","🐝","🦋","🐢","🐬",
-  "1","2","3","4","5","6","7","8","9","0",
-  "🏠","🏡","🏢","🏘️","🏰","🚗","🚕","🚌","🚙","🚓",
-  "🌱","🌿","🌵","🌳","🌲","🌴","🌷","🌸","🌻","🌹",
-  "🍀","🍁","🌼","🪴","🏎️","🚜","🚲","🛵","🚚","🚑"
+
+"🐶","🐱","🐭","🐰","🦊",
+"🐼","🐨","🐯","🦁","🐸",
+"🐵","🐷","🐮","🐔","🐧",
+"🦄","🐝","🦋","🐢","🐬",
+"1","2","3","4","5",
+"6","7","8","9","0",
+"🏠","🏡","🏢","🏰",
+"🚗","🚕","🚌","🚙",
+"🌱","🌿","🌵","🌳",
+"🌸","🌻","🌹","🍀"
+
 ];
 
-let player = "";
-let level = 1;
-let score = 0;
-let moves = 0;
-let first = null;
-let lock = false;
-let deck = [];
-let completedLevel = null;
 
-function getPairsForLevel() {
-  return Math.min(4 + Math.floor((level - 1) / 2), 30);
+let player="";
+let level=1;
+let score=0;
+let moves=0;
+
+let first=null;
+let lock=false;
+
+let deck=[];
+
+
+
+function start(){
+
+ player =
+ document.getElementById("name")
+ .value.trim();
+
+
+ if(!player){
+
+  alert("اكتب اسم اللاعب أولاً");
+
+  return;
+
+ }
+
+
+ level=1;
+ score=0;
+
+ openGame();
+
 }
 
-function getColumns(totalTiles) {
-  if (totalTiles <= 16) return 4;
-  if (totalTiles <= 24) return 5;
-  if (totalTiles <= 36) return 6;
-  if (totalTiles <= 48) return 7;
-  return 8;
+
+
+function openGame(){
+
+ localStorage.mmPlayer=player;
+
+ loadProgress();
+
+
+ document
+ .getElementById("login")
+ .classList.add("hidden");
+
+
+ document
+ .getElementById("game")
+ .classList.remove("hidden");
+
+
+ newLevel();
+
 }
 
-function start() {
-  player = document.getElementById("name").value.trim();
 
-  if (!player) {
-    alert("اكتب اسم اللاعب أولًا");
-    return;
-  }
 
-  level = 1;
-  score = 0;
-  openGame();
+function loadProgress(){
+
+ const saved =
+ JSON.parse(
+ localStorage.mmProgress || "null"
+ );
+
+
+ if(saved && saved.player===player){
+
+  level=saved.level || 1;
+
+  score=saved.score || 0;
+
+ }
+
 }
 
-function openGame() {
-  localStorage.mmPlayer = player;
-  loadProgress();
 
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
 
-  document.getElementById("stellarAddress").value = localStorage.mmStellarAddress || "";
-  updateClaimButton();
-  newLevel();
+function saveProgress(){
+
+ localStorage.mmProgress =
+ JSON.stringify({
+
+ player,
+
+ level,
+
+ score
+
+ });
+
 }
 
-function loadProgress() {
-  const saved = JSON.parse(localStorage.mmProgress || "null");
 
-  if (saved && saved.player === player) {
-    level = Math.min(saved.level || 1, MAX_LEVEL);
-    score = saved.score || 0;
-  }
+
+function getPairsForLevel(){
+
+ return Math.min(
+ 4 + Math.floor((level-1)/2),
+ 22
+ );
+
 }
 
-function saveProgress() {
-  localStorage.mmProgress = JSON.stringify({
-    player: player,
-    level: level,
-    score: score
-  });
+
+
+function getColumns(total){
+
+ if(total<=16)return 4;
+
+ if(total<=24)return 5;
+
+ if(total<=36)return 6;
+
+ return 7;
+
 }
 
-function newLevel() {
-  moves = 0;
-  first = null;
-  lock = false;
-  completedLevel = null;
-  document.getElementById("rewardStatus").textContent = "";
-  updateClaimButton();
 
-  const pairs = getPairsForLevel();
-  const symbols = SYMBOLS.slice(0, pairs);
 
-  deck = [...symbols, ...symbols]
-    .sort(() => Math.random() - 0.5)
-    .map(v => ({ v, open: false, done: false }));
+function newLevel(){
+
+ moves=0;
+
+ first=null;
+
+ lock=false;
+
+
+ const pairs=getPairsForLevel();
+
+
+ const symbols =
+ SYMBOLS.slice(0,pairs);
+
+
+ deck =
+ [...symbols,...symbols]
+ .sort(()=>Math.random()-0.5)
+ .map(v=>({
+
+  v,
+
+  open:false,
+
+  done:false
+
+ }));
+
+
+ render();
+
+}
+
+
+function render(){
+
+ document.getElementById("who").textContent=player;
+
+ document.getElementById("level").textContent=level;
+
+ document.getElementById("score").textContent=score;
+
+ document.getElementById("moves").textContent=moves;
+
+ document.getElementById("tiles").textContent=deck.length;
+
+
+ const grid =
+ document.getElementById("grid");
+
+
+ grid.innerHTML="";
+
+
+ grid.style.gridTemplateColumns =
+ `repeat(${getColumns(deck.length)},1fr)`;
+
+
+ deck.forEach((c,i)=>{
+
+
+ const b=document.createElement("button");
+
+
+ b.className =
+ "tile "+
+ ((c.open||c.done)?"open ":"")+
+ (c.done?"done":"");
+
+
+ b.textContent =
+ (c.open||c.done)?c.v:"?";
+
+
+ b.onclick=()=>flip(i);
+
+
+ grid.appendChild(b);
+
+
+ });
+
+
+ leaders();
+
+}
+
+
+function flip(i){
+
+ const c=deck[i];
+
+
+ if(lock || c.open || c.done)
+ return;
+
+
+ c.open=true;
+
+
+ if(first===null){
+
+  first=i;
 
   render();
-}
 
-function render() {
-  document.getElementById("who").textContent = player;
-  document.getElementById("level").textContent = level;
-  document.getElementById("score").textContent = score;
-  document.getElementById("moves").textContent = moves;
-  document.getElementById("tiles").textContent = deck.length;
+  return;
 
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${getColumns(deck.length)}, 1fr)`;
-
-  deck.forEach((c, i) => {
-    const b = document.createElement("button");
-    b.className = "tile " + ((c.open || c.done) ? "open" : "") + (c.done ? " done" : "");
-    b.textContent = (c.open || c.done) ? c.v : "?";
-    b.onclick = () => flip(i);
-    grid.appendChild(b);
-  });
-
-  leaders();
-}
-
-function flip(i) {
-  const c = deck[i];
-
-  if (lock || c.open || c.done) return;
-
-  c.open = true;
-
-  if (first === null) {
-    first = i;
-    render();
-    return;
-  }
-
-  moves++;
-  const f = deck[first];
-
-  if (f.v === c.v) {
-    f.done = true;
-    c.done = true;
-    score += 10 + level;
-    first = null;
-
-    if (deck.every(card => card.done)) {
-      lock = true;
-      completedLevel = level;
-      saveProgress();
-      updateClaimButton();
-      document.getElementById("rewardStatus").textContent =
-        "أكملت المستوى " + completedLevel + ". يمكنك استلام المكافأة الآن.";
-
-      setTimeout(() => {
-        if (level >= MAX_LEVEL) {
-          addLeader();
-          alert("مبروك! أكملت جميع المستويات الـ 70.");
-        } else {
-          alert("أكملت المستوى " + completedLevel + ". استلم المكافأة ثم ابدأ المستوى التالي.");
-        }
-      }, 600);
-    }
-  } else {
-    lock = true;
-
-    setTimeout(() => {
-      f.open = false;
-      c.open = false;
-      first = null;
-      lock = false;
-      render();
-    }, 700);
-  }
-
-  render();
-}
-
-function saveWallet() {
-  const address = document.getElementById("stellarAddress").value.trim();
-
-  if (!/^G[A-Z2-7]{55}$/.test(address)) {
-    alert("عنوان Stellar غير صحيح. يجب أن يبدأ بحرف G ويتكون من 56 حرفًا.");
-    return;
-  }
-
-  localStorage.mmStellarAddress = address;
-  document.getElementById("rewardStatus").textContent = "تم حفظ عنوان المحفظة.";
-  updateClaimButton();
-}
-
-function getClaimedLevels() {
-  return JSON.parse(localStorage.mmClaimedLevels || "[]");
-}
-
-function updateClaimButton() {
-  const button = document.getElementById("claimBtn");
-  const address = document.getElementById("stellarAddress").value.trim();
-  const claimed = getClaimedLevels();
-
-  const canClaim =
-    completedLevel !== null &&
-    /^G[A-Z2-7]{55}$/.test(address) &&
-    !claimed.includes(completedLevel);
-
-  button.disabled = !canClaim;
-
-  if (completedLevel !== null && claimed.includes(completedLevel)) {
-    document.getElementById("rewardStatus").textContent =
-      "تم استلام مكافأة هذا المستوى مسبقًا على هذا الجهاز.";
-  }
-}
-
-async function claimReward() {
-  const stellarAddress = document.getElementById("stellarAddress").value.trim();
-
-  if (!completedLevel) {
-    alert("أكمل المستوى أولًا.");
-    return;
-  }
-
-  if (!/^G[A-Z2-7]{55}$/.test(stellarAddress)) {
-    alert("احفظ عنوان محفظة Stellar صحيحًا أولًا.");
-    return;
-  }
-
-  const claimed = getClaimedLevels();
-
-  if (claimed.includes(completedLevel)) {
-    alert("تم استلام مكافأة هذا المستوى مسبقًا.");
-    return;
-  }
-
-  const button = document.getElementById("claimBtn");
-  button.disabled = true;
-  document.getElementById("rewardStatus").textContent = "جارٍ إرسال مكافأة MGC...";
-
-  try {
-    const response = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        stellarAddress: stellarAddress,
-        level: completedLevel,
-        proof: {
-          player: player,
-          score: score,
-          moves: moves,
-          completedAt: new Date().toISOString()
-        }
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.ok) {
-      throw new Error(data.error || "تعذر إرسال المكافأة.");
-    }
-
-    claimed.push(completedLevel);
-    localStorage.mmClaimedLevels = JSON.stringify(claimed);
-
-    document.getElementById("rewardStatus").textContent =
-      "تم إرسال " + data.amount + " MGC بنجاح. رقم العملية: " + data.hash;
-
-    if (completedLevel >= MAX_LEVEL) {
-      level = 1;
-      score = 0;
-      saveProgress();
-      newLevel();
-    } else {
-      level++;
-      saveProgress();
-      newLevel();
-    }
-  } catch (error) {
-    document.getElementById("rewardStatus").textContent =
-      "فشل إرسال المكافأة: " + error.message;
-    updateClaimButton();
-  }
-}
-
-function addLeader() {
-  const list = JSON.parse(localStorage.mmLeaders || "[]");
-
-  list.push({ n: player, s: score });
-  list.sort((a, b) => b.s - a.s);
-
-  localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
-}
-
-function leaders() {
-  const list = JSON.parse(localStorage.mmLeaders || "[]");
-
-  document.getElementById("board").innerHTML =
-    list.length
-      ? list.map(x => `<li>${x.n} - ${x.s}</li>`).join("")
-      : "<li>لا توجد نتائج بعد</li>";
-}
-
-function resetGame() {
-  newLevel();
-}
-
-function logout() {
-  saveProgress();
-  location.reload();
-}
-
-/* تسجيل الدخول عبر Pi */
-Pi.init({ version: "2.0", sandbox: true });
-
-async function loginWithPi() {
-  try {
-    const auth = await Pi.authenticate(["username"]);
-    player = auth.user.username;
-    document.getElementById("name").value = player;
-    openGame();
-  } catch (e) {
-    alert("حدث خطأ في تسجيل الدخول عبر Pi");
-  }
-}
+ }
 
 
-/* دفع Pi تجريبي: يتطلب خادمًا للموافقة والإكمال حتى تكتمل خطوة Pi Developer */
-async function testPiPayment() {
-  if (!window.Pi) {
-    alert("افتح اللعبة من داخل Pi Browser أولًا.");
-    return;
-  }
+ moves++;
 
-  const button = document.getElementById("piPayBtn");
-  button.disabled = true;
 
-  try {
-    await Pi.createPayment(
-      {
-        amount: 0.01,
-        memo: "Memory Match test payment",
-        metadata: { purpose: "pi-developer-checklist" }
-      },
-      {
-        onReadyForServerApproval: async (paymentId) => {
-          // ملاحظة: أضف في الـ Worker مسارًا للموافقة على الدفع ثم استبدل هذا التعليق بطلب POST إليه.
-          console.log("Payment ready for server approval:", paymentId);
-        },
-        onReadyForServerCompletion: async (paymentId, txid) => {
-          // ملاحظة: أضف في الـ Worker مسارًا لإكمال الدفع ثم استبدل هذا التعليق بطلب POST إليه.
-          console.log("Payment ready for server completion:", paymentId, txid);
-          alert("تمت الدفعة التجريبية بنجاح.");
-        },
-        onCancel: (paymentId) => {
-          console.log("Payment cancelled:", paymentId);
-          alert("تم إلغاء الدفع التجريبي.");
-        },
-        onError: (error) => {
-          console.error("Pi payment error:", error);
-          alert("تعذر بدء الدفع: " + (error.message || error));
-        }
+ const f=deck[first];
+
+
+ if(f.v===c.v){
+
+  f.done=true;
+
+  c.done=true;
+
+  score+=10+level;
+
+
+  first=null;
+
+
+  if(deck.every(x=>x.done)){
+
+
+    setTimeout(()=>{
+
+
+      if(level<MAX_LEVEL){
+
+        level++;
+
+        saveProgress();
+
+        newLevel();
+
+      }else{
+
+        addLeader();
+
+        alert("مبروك أكملت اللعبة");
+
       }
-    );
-  } catch (error) {
-    console.error("Pi payment error:", error);
-    alert("خطأ في Pi Payment: " + (error.message || error));
-  } finally {
-    button.disabled = false;
+
+
+    },700);
+
+
   }
+
+
+ }else{
+
+
+  lock=true;
+
+
+  setTimeout(()=>{
+
+    f.open=false;
+
+    c.open=false;
+
+    first=null;
+
+    lock=false;
+
+    render();
+
+
+  },700);
+
+
+ }
+
+
+ render();
+
 }
 
-window.onload = () => {
-  if (localStorage.mmPlayer) {
-    document.getElementById("name").value = localStorage.mmPlayer;
-  }
 
-  if (localStorage.mmStellarAddress) {
-    document.getElementById("stellarAddress").value = localStorage.mmStellarAddress;
-  }
+function resetGame(){
+
+ newLevel();
+
+}
+
+
+function logout(){
+
+ saveProgress();
+
+ location.reload();
+
+}
+
+
+window.onload=()=>{
+
+ if(localStorage.mmPlayer){
+
+ document.getElementById("name").value =
+ localStorage.mmPlayer;
+
+ }
+
 };
-</script>
 
+
+</script>
 </body>
 </html>

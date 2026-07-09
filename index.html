@@ -75,6 +75,7 @@
 
     <input id="stellarAddress" maxlength="56" placeholder="G... عنوان محفظة Stellar">
     <button onclick="saveWallet()">حفظ عنوان المحفظة</button>
+    <button id="piPayBtn" onclick="testPiPayment()">دفع تجريبي 0.01 Pi</button>
     <button id="claimBtn" onclick="claimReward()" disabled>استلم مكافأة المستوى</button>
 
     <div id="rewardStatus" class="reward-status"></div>
@@ -462,6 +463,52 @@ async function loginWithPi() {
     openGame();
   } catch (e) {
     alert("حدث خطأ في تسجيل الدخول عبر Pi");
+  }
+}
+
+
+/* دفع Pi تجريبي: يتطلب خادمًا للموافقة والإكمال حتى تكتمل خطوة Pi Developer */
+async function testPiPayment() {
+  if (!window.Pi) {
+    alert("افتح اللعبة من داخل Pi Browser أولًا.");
+    return;
+  }
+
+  const button = document.getElementById("piPayBtn");
+  button.disabled = true;
+
+  try {
+    await Pi.createPayment(
+      {
+        amount: 0.01,
+        memo: "Memory Match test payment",
+        metadata: { purpose: "pi-developer-checklist" }
+      },
+      {
+        onReadyForServerApproval: async (paymentId) => {
+          // ملاحظة: أضف في الـ Worker مسارًا للموافقة على الدفع ثم استبدل هذا التعليق بطلب POST إليه.
+          console.log("Payment ready for server approval:", paymentId);
+        },
+        onReadyForServerCompletion: async (paymentId, txid) => {
+          // ملاحظة: أضف في الـ Worker مسارًا لإكمال الدفع ثم استبدل هذا التعليق بطلب POST إليه.
+          console.log("Payment ready for server completion:", paymentId, txid);
+          alert("تمت الدفعة التجريبية بنجاح.");
+        },
+        onCancel: (paymentId) => {
+          console.log("Payment cancelled:", paymentId);
+          alert("تم إلغاء الدفع التجريبي.");
+        },
+        onError: (error) => {
+          console.error("Pi payment error:", error);
+          alert("تعذر بدء الدفع: " + (error.message || error));
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Pi payment error:", error);
+    alert("خطأ في Pi Payment: " + (error.message || error));
+  } finally {
+    button.disabled = false;
   }
 }
 

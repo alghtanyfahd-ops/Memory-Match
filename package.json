@@ -1,8 +1,6 @@
 {
-  "name": "memory-match-mgc",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@stellar/stellar-sdk": "^13.3.0"
-  }
+"name": "memory-match-mgc",
+"version": "1.0.0",
+"private": true,
+"dependencies": {}
 }

@@ -1,143 +1,157 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Memory Match MGC</title>
 
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
 <style>
+
 *{
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Tahoma,sans-serif;
 }
 
 body{
-    margin:0;
-    font-family:system-ui,sans-serif;
-    background:#101827;
-    color:#fff;
-    min-height:100vh;
+background:#0f172a;
+color:#fff;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
 }
 
 .app{
-    max-width:900px;
-    margin:auto;
-    padding:24px;
+width:100%;
+max-width:900px;
 }
 
 .card{
-    background:#1e293b;
-    border:1px solid #334155;
-    border-radius:18px;
-    padding:22px;
-    box-shadow:0 10px 30px rgba(0,0,0,.3);
+background:#1e293b;
+padding:25px;
+border-radius:18px;
+box-shadow:0 0 25px rgba(0,0,0,.35);
 }
 
 .hidden{
-    display:none;
+display:none;
 }
 
 h1,h2{
-    color:#fbbf24;
+text-align:center;
+color:#fbbf24;
+margin-bottom:15px;
 }
 
-input,
-button{
-    font:inherit;
-    border:0;
-    border-radius:10px;
-    padding:11px;
+p{
+text-align:center;
+margin-bottom:15px;
 }
 
 input{
-    width:100%;
-    margin:8px 0;
-    background:#fff;
-    color:#111;
+width:100%;
+padding:12px;
+margin:8px 0;
+border:none;
+border-radius:10px;
+font-size:16px;
 }
 
 button{
-    background:#fbbf24;
-    color:#111;
-    font-weight:bold;
-    cursor:pointer;
+padding:12px 18px;
+border:none;
+border-radius:10px;
+background:#fbbf24;
+font-weight:bold;
+cursor:pointer;
+margin:5px;
 }
 
-button:disabled{
-    opacity:.6;
+button:hover{
+opacity:.9;
 }
 
-.bar,
-.stats,
-.actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-.bar{
-    justify-content:space-between;
-    align-items:center;
-    margin:15px 0;
+.stats{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin:20px 0;
 }
 
 .pill{
-    background:#334155;
-    padding:8px 12px;
-    border-radius:999px;
+background:#334155;
+padding:8px 12px;
+border-radius:30px;
 }
 
 .grid{
-    display:grid;
-    gap:10px;
+display:grid;
+gap:10px;
+margin-top:20px;
 }
 
 .tile{
-    aspect-ratio:1;
-    background:#334155;
-    border-radius:14px;
-    display:grid;
-    place-items:center;
-    font-size:clamp(22px,6vw,46px);
+aspect-ratio:1;
+background:#334155;
+border-radius:12px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:34px;
+cursor:pointer;
+user-select:none;
 }
 
-.tile.open,
-.tile.done{
-    background:white;
-    color:black;
+.tile.open{
+background:white;
+color:black;
 }
 
 .tile.done{
-    background:#86efac;
+background:#22c55e;
+color:white;
 }
 
 .note{
-    color:#cbd5e1;
+font-size:14px;
+color:#cbd5e1;
+text-align:center;
+margin-top:10px;
+}
+
+.leader{
+margin-top:15px;
 }
 
 .leader li{
-    padding:8px;
-    border-bottom:1px solid #334155;
+padding:8px;
+border-bottom:1px solid #334155;
 }
-</style>
 
-<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</style>
 
 </head>
 
 <body>
 
-<main class="app">
+<div class="app">
 
 <section id="login" class="card">
 
 <h1>لعبة مطابقة الذاكرة</h1>
 
-<p>
-طابق جميع البطاقات وأكمل 70 مستوى لتحصل على مكافأة MGC.
-</p>
+<p>طابق جميع البطاقات وأكمل 70 مستوى لتحصل على مكافأة MGC.</p>
 
 <input
 id="name"
+type="text"
 maxlength="18"
 placeholder="اسم اللاعب">
 
@@ -155,29 +169,26 @@ placeholder="اسم اللاعب">
 
 <input
 id="walletAddress"
+type="text"
 maxlength="56"
 placeholder="عنوان يبدأ بـ G">
 
 </section>
 
-<section
-id="game"
-class="hidden">
+<section id="game" class="card hidden">
 
-<div class="bar">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
 
-<h1>
-Memory Match
-</h1>
+<h1>Memory Match</h1>
 
-<div class="actions">
+<div>
 
 <button id="musicBtn">
-تشغيل الموسيقى 🎵
+🎵 الموسيقى
 </button>
 
 <button onclick="resetGame()">
-إعادة المستوى
+إعادة
 </button>
 
 <button onclick="logout()">
@@ -220,14 +231,12 @@ Memory Match
 <section
 id="rewardCard"
 class="card hidden"
-style="margin:20px 0">
+style="margin-top:20px">
 
-<h2>
-مكافأة إكمال اللعبة
-</h2>
+<h2>مكافأة إكمال اللعبة</h2>
 
 <p class="note">
-بعد إنهاء جميع المراحل يمكنك استلام 10 MGC.
+بعد إنهاء المستوى 70 يمكنك استلام 10 MGC.
 </p>
 
 <button
@@ -238,7 +247,7 @@ onclick="claimMgc()">
 
 </button>
 
-<p id="claimStatus" class="note"></p>
+<p id="claimStatus"></p>
 
 </section>
 
@@ -251,130 +260,41 @@ class="grid">
 class="card"
 style="margin-top:20px">
 
-<h2>
-لوحة المتصدرين
-</h2>
+<h2>لوحة المتصدرين</h2>
 
-<ol
-id="board"
-class="leader">
-</ol>
+<ol id="board" class="leader"></ol>
 
 </section>
 
 </section>
-
-</main>
 
 <script>
 
 let audioCtx;
-let musicOn=false;
+let musicOn = false;
 let musicTimer;
-let musicStep=0;
+let musicStep = 0;
 
-let player="";
-let level=1;
-let score=0;
-let moves=0;
-let first=null;
-let lock=false;
-let deck=[];
+let player = "";
+let level = 1;
+let score = 0;
+let moves = 0;
+let first = null;
+let lock = false;
+let deck = [];
 
-let piUser=null;
-let piReady=false;
+let piUser = null;
+let piReady = false;
 
-const MAX_LEVEL=70;
+const MAX_LEVEL = 70;
 
-const SYMBOLS=[
+const SYMBOLS = [
 "🐶","🐱","🐭","🐰","🦊","🐼","🐨","🐯","🦁","🐸",
 "🐵","🐷","🐮","🐔","🐧","🦄","🐝","🦋","🐢","🐬",
 "1","2","3","4","5","6","7","8","9","0",
 "🏠","🏡","🏢","🏰","🚗","🚕","🚌","🚙",
 "🌱","🌿","🌵","🌳","🌸","🌻","🌹","🍀"
 ];
-function startMusic(){
-
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    const melody=[
-        261.63,
-        293.66,
-        329.63,
-        392.00,
-        329.63,
-        293.66,
-        246.94,
-        293.66
-    ];
-
-    function playSoftTone(freq){
-
-        const osc=audioCtx.createOscillator();
-        const gain=audioCtx.createGain();
-
-        osc.type="sine";
-        osc.frequency.value=freq;
-
-        gain.gain.setValueAtTime(0.001,audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.035,audioCtx.currentTime+0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.65);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime+0.7);
-
-    }
-
-    playSoftTone(melody[musicStep]);
-
-    musicTimer=setInterval(()=>{
-
-        musicStep=(musicStep+1)%melody.length;
-
-        playSoftTone(melody[musicStep]);
-
-    },700);
-
-}
-
-function stopMusic(){
-
-    clearInterval(musicTimer);
-
-    if(audioCtx){
-
-        audioCtx.close();
-
-        audioCtx=null;
-
-    }
-
-}
-
-document.getElementById("musicBtn").onclick=()=>{
-
-    if(!musicOn){
-
-        startMusic();
-
-        musicOn=true;
-
-        document.getElementById("musicBtn").textContent="إيقاف الموسيقى 🔇";
-
-    }else{
-
-        stopMusic();
-
-        musicOn=false;
-
-        document.getElementById("musicBtn").textContent="تشغيل الموسيقى 🎵";
-
-    }
-
-};
 
 async function initPi(){
 
@@ -385,7 +305,7 @@ async function initPi(){
         sandbox:true
     });
 
-    piReady=true;
+    piReady = true;
 
 }
 
@@ -393,18 +313,18 @@ initPi();
 
 function start(){
 
-    player=document.getElementById("name").value.trim();
+    player = document.getElementById("name").value.trim();
 
-    if(!player){
+    if(player===""){
 
-        alert("اكتب اسم اللاعب");
+        alert("اكتب اسم اللاعب أولاً");
 
         return;
 
     }
 
-    level=1;
-    score=0;
+    level = 1;
+    score = 0;
 
     openGame();
 
@@ -416,23 +336,23 @@ async function loginWithPi(){
 
         await initPi();
 
-        const auth=await Pi.authenticate(["username"]);
+        const auth = await Pi.authenticate(["username"]);
 
-        piUser=auth.user;
+        piUser = auth.user;
 
-        window.piAccessToken=auth.accessToken;
+        window.piAccessToken = auth.accessToken;
 
-        player=auth.user.username;
+        player = auth.user.username;
 
-        document.getElementById("name").value=player;
+        document.getElementById("name").value = player;
 
         openGame();
 
-    }catch(e){
-
-        console.error(e);
+    }catch(err){
 
         alert("تعذر تسجيل الدخول عبر Pi");
+
+        console.error(err);
 
     }
 
@@ -440,49 +360,19 @@ async function loginWithPi(){
 
 function openGame(){
 
-    localStorage.mmPlayer=player;
-
-    loadProgress();
-
     document.getElementById("login").classList.add("hidden");
 
     document.getElementById("game").classList.remove("hidden");
+
+    document.getElementById("who").textContent = player;
 
     newLevel();
 
 }
 
-function loadProgress(){
-
-    const saved=JSON.parse(localStorage.mmProgress || "null");
-
-    if(saved && saved.player===player){
-
-        level=Math.min(saved.level || 1,MAX_LEVEL);
-
-        score=saved.score || 0;
-
-    }
-
-}
-
-function saveProgress(){
-
-    localStorage.mmProgress=JSON.stringify({
-
-        player,
-
-        level,
-
-        score
-
-    });
-
-}
-
 function getPairsForLevel(){
 
-    return Math.min(4+Math.floor((level-1)/2),22);
+    return Math.min(4 + Math.floor((level - 1) / 2),22);
 
 }
 
@@ -511,45 +401,61 @@ function newLevel(){
     const symbols=SYMBOLS.slice(0,pairs);
 
     deck=[...symbols,...symbols]
-        .sort(()=>Math.random()-0.5)
-        .map(v=>({
-
-            v,
-
-            open:false,
-
-            done:false
-
-        }));
+    .sort(()=>Math.random()-0.5)
+    .map(v=>({
+        v:v,
+        open:false,
+        done:false
+    }));
 
     render();
 
-} 
+}
+
 function render(){
 
-    document.getElementById("who").textContent=player;
     document.getElementById("level").textContent=level;
+
     document.getElementById("score").textContent=score;
+
     document.getElementById("moves").textContent=moves;
+
     document.getElementById("tiles").textContent=deck.length;
 
     const grid=document.getElementById("grid");
 
     grid.innerHTML="";
 
-    grid.style.gridTemplateColumns=repeat(${getColumns(deck.length)},1fr);
+    grid.style.gridTemplateColumns=
+    repeat(${getColumns(deck.length)},1fr);
 
-    deck.forEach((c,i)=>{
+    deck.forEach((card,index)=>{
 
-        const b=document.createElement("button");
+        const button=document.createElement("button");
 
-        b.className="tile "+((c.open || c.done)?"open ":"")+(c.done?"done":"");
+        button.className="tile";
 
-        b.textContent=(c.open || c.done)?c.v:"?";
+        if(card.open || card.done){
 
-        b.onclick=()=>flip(i);
+            button.classList.add("open");
 
-        grid.appendChild(b);
+            button.textContent=card.v;
+
+        }else{
+
+            button.textContent="?";
+
+        }
+
+        if(card.done){
+
+            button.classList.add("done");
+
+        }
+
+        button.onclick=()=>flip(index);
+
+        grid.appendChild(button);
 
     });
 
@@ -557,19 +463,23 @@ function render(){
 
 }
 
-function flip(i){
+function flip(index){
 
-    const c=deck[i];
+    const card=deck[index];
 
-    if(lock  c.open  c.done) return;
+    if(lock  card.open  card.done){
 
-    c.open=true;
+        return;
+
+    }
+
+    card.open=true;
+
+    render();
 
     if(first===null){
 
-        first=i;
-
-        render();
+        first=index;
 
         return;
 
@@ -577,13 +487,13 @@ function flip(i){
 
     moves++;
 
-    const f=deck[first];
+    const previous=deck[first];
 
-    if(f.v===c.v){
+    if(previous.v===card.v){
 
-        f.done=true;
+        previous.done=true;
 
-        c.done=true;
+        card.done=true;
 
         score+=10+level;
 
@@ -611,7 +521,7 @@ function flip(i){
 
                     showRewardCard();
 
-                    alert("مبروك، أكملت جميع المراحل.");
+                    alert("🎉 مبروك لقد أنهيت جميع المراحل");
 
                     lock=false;
 
@@ -629,9 +539,9 @@ function flip(i){
 
         setTimeout(()=>{
 
-            f.open=false;
+            previous.open=false;
 
-            c.open=false;
+            card.open=false;
 
             first=null;
 
@@ -643,148 +553,189 @@ function flip(i){
 
     }
 
+}
+
+function getPairsForLevel(){
+
+    return Math.min(4 + Math.floor((level - 1) / 2),22);
+
+}
+
+function getColumns(total){
+
+    if(total<=16) return 4;
+
+    if(total<=24) return 5;
+
+    if(total<=36) return 6;
+
+    return 7;
+
+}
+
+function newLevel(){
+
+    moves=0;
+
+    first=null;
+
+    lock=false;
+
+    const pairs=getPairsForLevel();
+
+    const symbols=SYMBOLS.slice(0,pairs);
+
+    deck=[...symbols,...symbols]
+    .sort(()=>Math.random()-0.5)
+    .map(v=>({
+        v:v,
+        open:false,
+        done:false
+    }));
+
     render();
 
 }
 
-function showRewardCard(){
+function render(){
 
-    document.getElementById("rewardCard").classList.remove("hidden");
+    document.getElementById("level").textContent=level;
 
-}
+    document.getElementById("score").textContent=score;
 
-async function claimMgc(){
+    document.getElementById("moves").textContent=moves;
 
-    const status=document.getElementById("claimStatus");
+    document.getElementById("tiles").textContent=deck.length;
 
-    const button=document.getElementById("claimMgcBtn");
+    const grid=document.getElementById("grid");
 
-    const destination=document.getElementById("walletAddress").value.trim();
+    grid.innerHTML="";
 
-    if(!piUser){
+    grid.style.gridTemplateColumns=
+    repeat(${getColumns(deck.length)},1fr);
 
-        status.textContent="سجل الدخول بواسطة Pi أولاً";
+    deck.forEach((card,index)=>{
 
-        return;
+        const button=document.createElement("button");
 
-    }
+        button.className="tile";
 
-    if(!/^G[A-Z2-7]{55}$/.test(destination)){
+        if(card.open || card.done){
 
-        status.textContent="عنوان Stellar غير صحيح";
+            button.classList.add("open");
 
-        return;
+            button.textContent=card.v;
 
-    }
+        }else{
 
-    button.disabled=true;
-
-    status.textContent="جار إرسال المكافأة...";
-
-    try{
-
-        const response=await fetch("/api/claim-mgc",{
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-            body:JSON.stringify({
-
-                destination,
-
-                piUserId:piUser.uid,
-
-                username:piUser.username,
-
-                accessToken:window.piAccessToken
-
-            })
-
-        });
-
-        const data=await response.json();
-
-        if(!response.ok || !data.success){
-
-            throw new Error(data.error || "فشل إرسال المكافأة");
+            button.textContent="?";
 
         }
 
-        localStorage.setItem("mgcClaimed_"+piUser.uid,"true");
+        if(card.done){
 
-        status.textContent="تم إرسال 10 MGC بنجاح";
+            button.classList.add("done");
 
-    }catch(e){
+        }
 
-        status.textContent=e.message;
+        button.onclick=()=>flip(index);
 
-        button.disabled=false;
-
-    }
-
-}
-
-function addLeader(){
-
-    const list=JSON.parse(localStorage.mmLeaders || "[]");
-
-    list.push({
-
-        n:player,
-
-        s:score
+        grid.appendChild(button);
 
     });
 
-    list.sort((a,b)=>b.s-a.s);
-
-    localStorage.mmLeaders=JSON.stringify(list.slice(0,10));
+    leaders();
 
 }
 
-function leaders(){
+function flip(index){
 
-    const list=JSON.parse(localStorage.mmLeaders || "[]");
+    const card=deck[index];
 
-    document.getElementById("board").innerHTML=
+    if(lock  card.open  card.done){
 
-    list.length
-
-    ? list.map(x=><li>${x.n} - ${x.s}</li>).join("")
-
-    : "<li>لا توجد نتائج بعد</li>";
-
-}
-
-function resetGame(){
-
-    newLevel();
-
-}
-
-function logout(){
-
-    saveProgress();
-
-    location.reload();
-
-}
-
-window.onload=()=>{
-
-    if(localStorage.mmPlayer){
-
-        document.getElementById("name").value=localStorage.mmPlayer;
+        return;
 
     }
 
-};
+    card.open=true;
 
-</script>
+    render();
 
-</body>
+    if(first===null){
 
-</html>  
+        first=index;
+
+        return;
+
+    }
+
+    moves++;
+
+    const previous=deck[first];
+
+    if(previous.v===card.v){
+
+        previous.done=true;
+
+        card.done=true;
+
+        score+=10+level;
+
+        first=null;
+
+        if(deck.every(x=>x.done)){
+
+            lock=true;
+
+            setTimeout(()=>{
+
+                if(level<MAX_LEVEL){
+
+                    level++;
+
+                    saveProgress();
+
+                    newLevel();
+
+                }else{
+
+                    addLeader();
+
+                    saveProgress();
+
+                    showRewardCard();
+
+                    alert("🎉 مبروك لقد أنهيت جميع المراحل");
+
+                    lock=false;
+
+                    render();
+
+                }
+
+            },700);
+
+        }
+
+    }else{
+
+        lock=true;
+
+        setTimeout(()=>{
+
+            previous.open=false;
+
+            card.open=false;
+
+            first=null;
+
+            lock=false;
+
+            render();
+
+        },700);
+
+    }
+
+}    

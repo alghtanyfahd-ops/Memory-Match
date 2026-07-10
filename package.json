@@ -2,5 +2,17 @@
 "name": "memory-match-mgc",
 "version": "1.0.0",
 "private": true,
-"dependencies": {}
+"type": "module",
+"scripts": {
+"dev": "netlify dev",
+"deploy": "netlify deploy --prod"
+},
+"dependencies": {
+"@netlify/functions": "^3.1.10",
+"@stellar/stellar-sdk": "^13.3.0",
+"dotenv": "^16.4.7"
+},
+"devDependencies": {
+"netlify-cli": "^17.37.2"
+}
 }

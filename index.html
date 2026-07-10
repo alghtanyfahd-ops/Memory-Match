@@ -158,7 +158,23 @@
     let deck = [];
     let piUser = null;
 
-    Pi.init({ version: "2.0", sandbox: true });
+   let piReady = false;
+
+async function initPi() {
+  try {
+    await Pi.init({
+      version: "2.0",
+      sandbox: true
+    });
+
+    piReady = true;
+    console.log("Pi SDK Ready");
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+initPi();
 
     function start() {
       player = document.getElementById("name").value.trim();

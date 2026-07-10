@@ -15,8 +15,16 @@ const {
   accessToken,
   piUserId,
   username
-} = req.body || {};
-```
+} = req.body || {}; 
+if (!accessToken) {
+  return res.status(401).json({
+    success: false,
+    error: "Pi Access Token مفقود"
+  });
+}
+
+  
+  ```
 if (!destination || !destination.startsWith("G")) {
   return res.status(400).json({
     error: "عنوان محفظة اللاعب غير صالح"

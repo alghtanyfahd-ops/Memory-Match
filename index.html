@@ -376,7 +376,17 @@ async function claimMgc() {
         data.error || "فشل إرسال MGC"
       );
     }
+    status.textContent =
+      "تم إرسال 10 MGC بنجاح. رقم العملية: " +
+      data.transactionHash;
 
+  } catch (error) {
+    status.textContent =
+      "فشل الطلب: " + error.message;
+
+    button.disabled = false;
+  }
+}
     status.textContent =
       "تم إرسال 10 MGC بنجاح. رقم العملية: " +
       data.transactionHash;

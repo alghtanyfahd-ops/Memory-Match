@@ -1,451 +1,790 @@
 <!doctype html>
-
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>لعبة مطابقة الذاكرة</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory Match MGC</title>
 
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: #101827; color: #fff; min-height: 100vh; }
-    .app { max-width: 900px; margin: auto; padding: 24px; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px #0004; }
-    h1, h2 { color: #fbbf24; }
-    .hidden { display: none; }
-    input, button { font: inherit; border-radius: 10px; padding: 11px; border: 0; }
-    input { width: 100%; margin: 7px 0; background: #fff; color: #111; }
-    button { background: #fbbf24; color: #111; font-weight: 800; cursor: pointer; margin: 6px 0; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    .bar, .stats, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .bar { align-items: center; justify-content: space-between; margin: 15px 0; }
-    .pill { background: #334155; padding: 8px 12px; border-radius: 999px; }
-    .grid { display: grid; gap: 10px; }
-    .tile { aspect-ratio: 1; background: #334155; border-radius: 14px; display: grid; place-items: center; font-size: clamp(22px, 6vw, 46px); }
-    .tile.open, .tile.done { background: #fff; color: #111; }
-    .tile.done { background: #86efac; }
-    .leader li { padding: 8px; border-bottom: 1px solid #334155; }
-    .note { color: #cbd5e1; }
-  </style>
+<style>
+*{
+    box-sizing:border-box;
+}
 
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+body{
+    margin:0;
+    font-family:system-ui,sans-serif;
+    background:#101827;
+    color:#fff;
+    min-height:100vh;
+}
+
+.app{
+    max-width:900px;
+    margin:auto;
+    padding:24px;
+}
+
+.card{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.hidden{
+    display:none;
+}
+
+h1,h2{
+    color:#fbbf24;
+}
+
+input,
+button{
+    font:inherit;
+    border:0;
+    border-radius:10px;
+    padding:11px;
+}
+
+input{
+    width:100%;
+    margin:8px 0;
+    background:#fff;
+    color:#111;
+}
+
+button{
+    background:#fbbf24;
+    color:#111;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:disabled{
+    opacity:.6;
+}
+
+.bar,
+.stats,
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.bar{
+    justify-content:space-between;
+    align-items:center;
+    margin:15px 0;
+}
+
+.pill{
+    background:#334155;
+    padding:8px 12px;
+    border-radius:999px;
+}
+
+.grid{
+    display:grid;
+    gap:10px;
+}
+
+.tile{
+    aspect-ratio:1;
+    background:#334155;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    font-size:clamp(22px,6vw,46px);
+}
+
+.tile.open,
+.tile.done{
+    background:white;
+    color:black;
+}
+
+.tile.done{
+    background:#86efac;
+}
+
+.note{
+    color:#cbd5e1;
+}
+
+.leader li{
+    padding:8px;
+    border-bottom:1px solid #334155;
+}
+</style>
+
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 </head>
 
 <body>
-  <main class="app">
-    <section id="login" class="card">
-      <h1>لعبة مطابقة الذاكرة</h1>
-      <p>طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.</p>
 
-```
-  <input id="name" maxlength="18" placeholder="اكتب اسم اللاعب">
-  <button onclick="start()">ابدأ اللعبة</button>
-  <button onclick="loginWithPi()">تسجيل الدخول عبر Pi</button>
+<main class="app">
 
-  <p class="note">للمطالبة بمكافأة MGC، سجّل الدخول عبر Pi Browser وأدخل عنوان محفظة Stellar الذي أضاف Trustline لعملة MGC.</p>
-  <input id="walletAddress" maxlength="56" placeholder="عنوان محفظة Stellar يبدأ بـ G...">
+<section id="login" class="card">
+
+<h1>لعبة مطابقة الذاكرة</h1>
+
+<p>
+طابق جميع البطاقات وأكمل 70 مستوى لتحصل على مكافأة MGC.
+</p>
+
+<input
+id="name"
+maxlength="18"
+placeholder="اسم اللاعب">
+
+<button onclick="start()">
+ابدأ اللعبة
+</button>
+
+<button onclick="loginWithPi()">
+تسجيل الدخول بواسطة Pi
+</button>
+
+<p class="note">
+أدخل عنوان محفظة Stellar بعد تسجيل الدخول.
+</p>
+
+<input
+id="walletAddress"
+maxlength="56"
+placeholder="عنوان يبدأ بـ G">
+
 </section>
 
-<section id="game" class="hidden">
-  <div class="bar">
-    <h1>لعبة مطابقة الذاكرة</h1>
+<section
+id="game"
+class="hidden">
 
-    <div class="actions">
-      <button id="musicBtn">تشغيل موسيقى هادئة 🎵</button>
-      <button onclick="resetGame()">إعادة المستوى</button>
-      <button onclick="logout()">خروج</button>
-    </div>
-  </div>
+<div class="bar">
 
-  <div class="stats">
-    <span class="pill">اللاعب: <b id="who"></b></span>
-    <span class="pill">المستوى: <b id="level"></b> / 70</span>
-    <span class="pill">النقاط: <b id="score"></b></span>
-    <span class="pill">الحركات: <b id="moves"></b></span>
-    <span class="pill">المربعات: <b id="tiles"></b></span>
-  </div>
+<h1>
+Memory Match
+</h1>
 
-  <section id="rewardCard" class="card hidden" style="margin:18px 0">
-    <h2>مكافأة إكمال اللعبة</h2>
-    <p class="note">أكملت 70 مستوى. يمكنك طلب 10 MGC مرة واحدة للتجربة.</p>
-    <button id="claimMgcBtn" onclick="claimMgc()">استلام 10 MGC</button>
-    <p id="claimStatus" class="note"></p>
-  </section>
+<div class="actions">
 
-  <div id="grid" class="grid"></div>
+<button id="musicBtn">
+تشغيل الموسيقى 🎵
+</button>
 
-  <section class="card" style="margin-top:18px">
-    <h2>لوحة المتصدرين</h2>
-    <ol id="board" class="leader"></ol>
-  </section>
+<button onclick="resetGame()">
+إعادة المستوى
+</button>
+
+<button onclick="logout()">
+خروج
+</button>
+
+</div>
+
+</div>
+
+<div class="stats">
+
+<span class="pill">
+اللاعب :
+<b id="who"></b>
+</span>
+
+<span class="pill">
+المستوى :
+<b id="level"></b>/70
+</span>
+
+<span class="pill">
+النقاط :
+<b id="score"></b>
+</span>
+
+<span class="pill">
+الحركات :
+<b id="moves"></b>
+</span>
+
+<span class="pill">
+المربعات :
+<b id="tiles"></b>
+</span>
+
+</div>
+
+<section
+id="rewardCard"
+class="card hidden"
+style="margin:20px 0">
+
+<h2>
+مكافأة إكمال اللعبة
+</h2>
+
+<p class="note">
+بعد إنهاء جميع المراحل يمكنك استلام 10 MGC.
+</p>
+
+<button
+id="claimMgcBtn"
+onclick="claimMgc()">
+
+استلام 10 MGC
+
+</button>
+
+<p id="claimStatus" class="note"></p>
+
 </section>
-```
 
-  </main>
+<div
+id="grid"
+class="grid">
+</div>
 
-  <script>
-    let audioCtx;
-    let musicOn = false;
-    let musicTimer;
-    let musicStep = 0;
+<section
+class="card"
+style="margin-top:20px">
 
-    function startMusic() {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+<h2>
+لوحة المتصدرين
+</h2>
 
-      const melody = [261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 246.94, 293.66];
+<ol
+id="board"
+class="leader">
+</ol>
 
-      function playSoftTone(freq) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+</section>
 
-        osc.type = "sine";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+</section>
+
+</main>
+
+<script>
+
+let audioCtx;
+let musicOn=false;
+let musicTimer;
+let musicStep=0;
+
+let player="";
+let level=1;
+let score=0;
+let moves=0;
+let first=null;
+let lock=false;
+let deck=[];
+
+let piUser=null;
+let piReady=false;
+
+const MAX_LEVEL=70;
+
+const SYMBOLS=[
+"🐶","🐱","🐭","🐰","🦊","🐼","🐨","🐯","🦁","🐸",
+"🐵","🐷","🐮","🐔","🐧","🦄","🐝","🦋","🐢","🐬",
+"1","2","3","4","5","6","7","8","9","0",
+"🏠","🏡","🏢","🏰","🚗","🚕","🚌","🚙",
+"🌱","🌿","🌵","🌳","🌸","🌻","🌹","🍀"
+];
+function startMusic(){
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const melody=[
+        261.63,
+        293.66,
+        329.63,
+        392.00,
+        329.63,
+        293.66,
+        246.94,
+        293.66
+    ];
+
+    function playSoftTone(freq){
+
+        const osc=audioCtx.createOscillator();
+        const gain=audioCtx.createGain();
+
+        osc.type="sine";
+        osc.frequency.value=freq;
+
+        gain.gain.setValueAtTime(0.001,audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.035,audioCtx.currentTime+0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.65);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
+
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.7);
-      }
+        osc.stop(audioCtx.currentTime+0.7);
 
-      playSoftTone(melody[musicStep]);
-      musicTimer = setInterval(() => {
-        musicStep = (musicStep + 1) % melody.length;
+    }
+
+    playSoftTone(melody[musicStep]);
+
+    musicTimer=setInterval(()=>{
+
+        musicStep=(musicStep+1)%melody.length;
+
         playSoftTone(melody[musicStep]);
-      }, 700);
-    }
 
-    function stopMusic() {
-      clearInterval(musicTimer);
-
-      if (audioCtx) {
-        audioCtx.close();
-        audioCtx = null;
-      }
-    }
-
-    document.getElementById("musicBtn").onclick = () => {
-      if (!musicOn) {
-        startMusic();
-        musicOn = true;
-        document.getElementById("musicBtn").textContent = "إيقاف الموسيقى 🔇";
-      } else {
-        stopMusic();
-        musicOn = false;
-        document.getElementById("musicBtn").textContent = "تشغيل موسيقى هادئة 🎵";
-      }
-    };
-
-    const MAX_LEVEL = 70;
-
-    const SYMBOLS = [
-      "🐶","🐱","🐭","🐰","🦊","🐼","🐨","🐯","🦁","🐸",
-      "🐵","🐷","🐮","🐔","🐧","🦄","🐝","🦋","🐢","🐬",
-      "1","2","3","4","5","6","7","8","9","0",
-      "🏠","🏡","🏢","🏰","🚗","🚕","🚌","🚙",
-      "🌱","🌿","🌵","🌳","🌸","🌻","🌹","🍀"
-    ];
-
-    let player = "";
-    let level = 1;
-    let score = 0;
-    let moves = 0;
-    let first = null;
-    let lock = false;
-    let deck = [];
-    let piUser = null;
-
-   let piReady = false;
-
-async function loginWithPi() {
-
-  try {
-
-    if (!piReady) {
-
-      await initPi();
-
-    }
-
-    const auth = await Pi.authenticate(["username"]);
-
-    piUser = auth.user;
-
-    window.piAccessToken = auth.accessToken;
-
-    player = auth.user.username;
-
-    document.getElementById("name").value = player;
-
-    openGame();
-
-  } catch (error) {
-
-    alert("فشل تسجيل الدخول عبر Pi");
-
-    console.error(error);
-
-  }
+    },700);
 
 }
 
-    await Pi.init({
-      version: "2.0",
-      sandbox: true
+function stopMusic(){
+
+    clearInterval(musicTimer);
+
+    if(audioCtx){
+
+        audioCtx.close();
+
+        audioCtx=null;
+
+    }
+
+}
+
+document.getElementById("musicBtn").onclick=()=>{
+
+    if(!musicOn){
+
+        startMusic();
+
+        musicOn=true;
+
+        document.getElementById("musicBtn").textContent="إيقاف الموسيقى 🔇";
+
+    }else{
+
+        stopMusic();
+
+        musicOn=false;
+
+        document.getElementById("musicBtn").textContent="تشغيل الموسيقى 🎵";
+
+    }
+
+};
+
+async function initPi(){
+
+    if(piReady) return;
+
+    Pi.init({
+        version:"2.0",
+        sandbox:true
     });
 
-    piReady = true;
-    console.log("Pi SDK Ready");
-  } catch (e) {
-    console.error(e);
-  }
+    piReady=true;
+
 }
 
 initPi();
 
-    function start() {
-      player = document.getElementById("name").value.trim();
+function start(){
 
-      if (!player) {
-        alert("اكتب اسم اللاعب أولًا");
+    player=document.getElementById("name").value.trim();
+
+    if(!player){
+
+        alert("اكتب اسم اللاعب");
+
         return;
-      }
 
-      level = 1;
-      score = 0;
-      openGame();
     }
 
-    async function loginWithPi() {
-      try {
-        const auth = await Pi.authenticate(["username"]);
-        piUser = auth.user;
-        player = auth.user.username;
-        document.getElementById("name").value = player;
+    level=1;
+    score=0;
+
+    openGame();
+
+}
+
+async function loginWithPi(){
+
+    try{
+
+        await initPi();
+
+        const auth=await Pi.authenticate(["username"]);
+
+        piUser=auth.user;
+
+        window.piAccessToken=auth.accessToken;
+
+        player=auth.user.username;
+
+        document.getElementById("name").value=player;
+
         openGame();
-      } catch (error) {
-        alert("تعذر تسجيل الدخول عبر Pi. افتح اللعبة من Pi Browser وحاول مرة أخرى.");
-      }
+
+    }catch(e){
+
+        console.error(e);
+
+        alert("تعذر تسجيل الدخول عبر Pi");
+
     }
 
-    function openGame() {
-      localStorage.mmPlayer = player;
-      loadProgress();
+}
 
-      document.getElementById("login").classList.add("hidden");
-      document.getElementById("game").classList.remove("hidden");
+function openGame(){
 
-      newLevel();
+    localStorage.mmPlayer=player;
+
+    loadProgress();
+
+    document.getElementById("login").classList.add("hidden");
+
+    document.getElementById("game").classList.remove("hidden");
+
+    newLevel();
+
+}
+
+function loadProgress(){
+
+    const saved=JSON.parse(localStorage.mmProgress || "null");
+
+    if(saved && saved.player===player){
+
+        level=Math.min(saved.level || 1,MAX_LEVEL);
+
+        score=saved.score || 0;
+
     }
 
-    function loadProgress() {
-      const saved = JSON.parse(localStorage.mmProgress || "null");
+}
 
-      if (saved && saved.player === player) {
-        level = Math.min(saved.level || 1, MAX_LEVEL);
-        score = saved.score || 0;
-      }
-    }
+function saveProgress(){
 
-    function saveProgress() {
-      localStorage.mmProgress = JSON.stringify({ player, level, score });
-    }
+    localStorage.mmProgress=JSON.stringify({
 
-    function getPairsForLevel() {
-      return Math.min(4 + Math.floor((level - 1) / 2), 22);
-    }
+        player,
 
-    function getColumns(total) {
-      if (total <= 16) return 4;
-      if (total <= 24) return 5;
-      if (total <= 36) return 6;
-      return 7;
-    }
+        level,
 
-    function newLevel() {
-      moves = 0;
-      first = null;
-      lock = false;
+        score
 
-      const pairs = getPairsForLevel();
-      const symbols = SYMBOLS.slice(0, pairs);
+    });
 
-      deck = [...symbols, ...symbols]
-        .sort(() => Math.random() - 0.5)
-        .map(v => ({ v, open: false, done: false }));
+}
 
-      render();
-    }
+function getPairsForLevel(){
 
-    function render() {
-      document.getElementById("who").textContent = player;
-      document.getElementById("level").textContent = level;
-      document.getElementById("score").textContent = score;
-      document.getElementById("moves").textContent = moves;
-      document.getElementById("tiles").textContent = deck.length;
+    return Math.min(4+Math.floor((level-1)/2),22);
 
-      const grid = document.getElementById("grid");
-      grid.innerHTML = "";
-      grid.style.gridTemplateColumns = `repeat(${getColumns(deck.length)}, 1fr)`;
+}
 
-      deck.forEach((c, i) => {
-        const b = document.createElement("button");
-        b.className = "tile " + ((c.open || c.done) ? "open " : "") + (c.done ? "done" : "");
-        b.textContent = (c.open || c.done) ? c.v : "?";
-        b.onclick = () => flip(i);
+function getColumns(total){
+
+    if(total<=16) return 4;
+
+    if(total<=24) return 5;
+
+    if(total<=36) return 6;
+
+    return 7;
+
+}
+
+function newLevel(){
+
+    moves=0;
+
+    first=null;
+
+    lock=false;
+
+    const pairs=getPairsForLevel();
+
+    const symbols=SYMBOLS.slice(0,pairs);
+
+    deck=[...symbols,...symbols]
+        .sort(()=>Math.random()-0.5)
+        .map(v=>({
+
+            v,
+
+            open:false,
+
+            done:false
+
+        }));
+
+    render();
+
+} 
+function render(){
+
+    document.getElementById("who").textContent=player;
+    document.getElementById("level").textContent=level;
+    document.getElementById("score").textContent=score;
+    document.getElementById("moves").textContent=moves;
+    document.getElementById("tiles").textContent=deck.length;
+
+    const grid=document.getElementById("grid");
+
+    grid.innerHTML="";
+
+    grid.style.gridTemplateColumns=repeat(${getColumns(deck.length)},1fr);
+
+    deck.forEach((c,i)=>{
+
+        const b=document.createElement("button");
+
+        b.className="tile "+((c.open || c.done)?"open ":"")+(c.done?"done":"");
+
+        b.textContent=(c.open || c.done)?c.v:"?";
+
+        b.onclick=()=>flip(i);
+
         grid.appendChild(b);
-      });
 
-      leaders();
-    }
+    });
 
-    function flip(i) {
-      const c = deck[i];
+    leaders();
 
-      if (lock || c.open || c.done) return;
+}
 
-      c.open = true;
+function flip(i){
 
-      if (first === null) {
-        first = i;
+    const c=deck[i];
+
+    if(lock  c.open  c.done) return;
+
+    c.open=true;
+
+    if(first===null){
+
+        first=i;
+
         render();
+
         return;
-      }
 
-      moves++;
-      const f = deck[first];
+    }
 
-      if (f.v === c.v) {
-        f.done = true;
-        c.done = true;
-        score += 10 + level;
-        first = null;
+    moves++;
 
-        if (deck.every(x => x.done)) {
-          lock = true;
+    const f=deck[first];
 
-          setTimeout(() => {
-            if (level < MAX_LEVEL) {
-              level++;
-              saveProgress();
-              newLevel();
-            } else {
-              addLeader();
-              saveProgress();
-              showRewardCard();
-              alert("مبروك! أكملت اللعبة. يمكنك الآن طلب مكافأة MGC.");
-              lock = false;
-              render();
-            }
-          }, 700);
+    if(f.v===c.v){
+
+        f.done=true;
+
+        c.done=true;
+
+        score+=10+level;
+
+        first=null;
+
+        if(deck.every(x=>x.done)){
+
+            lock=true;
+
+            setTimeout(()=>{
+
+                if(level<MAX_LEVEL){
+
+                    level++;
+
+                    saveProgress();
+
+                    newLevel();
+
+                }else{
+
+                    addLeader();
+
+                    saveProgress();
+
+                    showRewardCard();
+
+                    alert("مبروك، أكملت جميع المراحل.");
+
+                    lock=false;
+
+                    render();
+
+                }
+
+            },700);
+
         }
-      } else {
-        lock = true;
 
-        setTimeout(() => {
-          f.open = false;
-          c.open = false;
-          first = null;
-          lock = false;
-          render();
-        }, 700);
-      }
+    }else{
 
-      render();
+        lock=true;
+
+        setTimeout(()=>{
+
+            f.open=false;
+
+            c.open=false;
+
+            first=null;
+
+            lock=false;
+
+            render();
+
+        },700);
+
     }
 
-    function showRewardCard() {
-      document.getElementById("rewardCard").classList.remove("hidden");
+    render();
+
+}
+
+function showRewardCard(){
+
+    document.getElementById("rewardCard").classList.remove("hidden");
+
+}
+
+async function claimMgc(){
+
+    const status=document.getElementById("claimStatus");
+
+    const button=document.getElementById("claimMgcBtn");
+
+    const destination=document.getElementById("walletAddress").value.trim();
+
+    if(!piUser){
+
+        status.textContent="سجل الدخول بواسطة Pi أولاً";
+
+        return;
+
     }
 
-    async function claimMgc() {
-      const status = document.getElementById("claimStatus");
-      const button = document.getElementById("claimMgcBtn");
-      const destination = document.getElementById("walletAddress").value.trim();
+    if(!/^G[A-Z2-7]{55}$/.test(destination)){
 
-      if (!piUser) {
-        status.textContent = "سجّل الدخول عبر Pi أولًا.";
+        status.textContent="عنوان Stellar غير صحيح";
+
         return;
-      }
 
-      if (!/^G[A-Z2-7]{55}$/.test(destination)) {
-        status.textContent = "أدخل عنوان Stellar صحيحًا يبدأ بـ G ويحتوي على 56 حرفًا.";
-        return;
-      }
+    }
 
-      if (localStorage.getItem("mgcClaimed_" + piUser.uid)) {
-        status.textContent = "تم تسجيل مطالبتك من هذا الجهاز.";
-        return;
-      }
+    button.disabled=true;
 
-      button.disabled = true;
-      status.textContent = "جارٍ إرسال طلب المكافأة...";
+    status.textContent="جار إرسال المكافأة...";
 
-      try {
-        const response = await fetch("/api/claim-mgc", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-    destination,
-    piUserId: piUser.uid,
-    username: piUser.username,
-    accessToken: window.piAccessToken
-})
+    try{
+
+        const response=await fetch("/api/claim-mgc",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                destination,
+
+                piUserId:piUser.uid,
+
+                username:piUser.username,
+
+                accessToken:window.piAccessToken
+
+            })
 
         });
 
-        const data = await response.json();
+        const data=await response.json();
 
-        if (!response.ok || !data.success) {
-          throw new Error(
-            typeof data.error === "string"
-              ? data.error
-              : "فشل إرسال MGC"
-          );
+        if(!response.ok || !data.success){
+
+            throw new Error(data.error || "فشل إرسال المكافأة");
+
         }
 
-        localStorage.setItem("mgcClaimed_" + piUser.uid, "true");
-        status.textContent = "تم إرسال 10 MGC بنجاح. رقم العملية: " + data.transactionHash;
-      } catch (error) {
-        status.textContent = "فشل الطلب: " + error.message;
-        button.disabled = false;
-      }
+        localStorage.setItem("mgcClaimed_"+piUser.uid,"true");
+
+        status.textContent="تم إرسال 10 MGC بنجاح";
+
+    }catch(e){
+
+        status.textContent=e.message;
+
+        button.disabled=false;
+
     }
 
-    function addLeader() {
-      const list = JSON.parse(localStorage.mmLeaders || "[]");
-      list.push({ n: player, s: score });
-      list.sort((a, b) => b.s - a.s);
-      localStorage.mmLeaders = JSON.stringify(list.slice(0, 10));
+}
+
+function addLeader(){
+
+    const list=JSON.parse(localStorage.mmLeaders || "[]");
+
+    list.push({
+
+        n:player,
+
+        s:score
+
+    });
+
+    list.sort((a,b)=>b.s-a.s);
+
+    localStorage.mmLeaders=JSON.stringify(list.slice(0,10));
+
+}
+
+function leaders(){
+
+    const list=JSON.parse(localStorage.mmLeaders || "[]");
+
+    document.getElementById("board").innerHTML=
+
+    list.length
+
+    ? list.map(x=><li>${x.n} - ${x.s}</li>).join("")
+
+    : "<li>لا توجد نتائج بعد</li>";
+
+}
+
+function resetGame(){
+
+    newLevel();
+
+}
+
+function logout(){
+
+    saveProgress();
+
+    location.reload();
+
+}
+
+window.onload=()=>{
+
+    if(localStorage.mmPlayer){
+
+        document.getElementById("name").value=localStorage.mmPlayer;
+
     }
 
-    function leaders() {
-      const list = JSON.parse(localStorage.mmLeaders || "[]");
+};
 
-      document.getElementById("board").innerHTML =
-        list.length
-          ? list.map(x => `<li>${x.n} - ${x.s}</li>`).join("")
-          : "<li>لا توجد نتائج بعد</li>";
-    }
-
-    function resetGame() {
-      newLevel();
-    }
-
-    function logout() {
-      saveProgress();
-      location.reload();
-    }
-
-    window.onload = () => {
-      if (localStorage.mmPlayer) {
-        document.getElementById("name").value = localStorage.mmPlayer;
-      }
-    };
-  </script>
+</script>
 
 </body>
-</html>
+
+</html>  

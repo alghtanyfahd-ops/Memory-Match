@@ -23,6 +23,27 @@ if (!accessToken) {
   });
 }
 
+const verify = await fetch("https://api.minepi.com/v2/me", {
+  headers: {
+    Authorization: `Bearer ${accessToken}`
+  }
+});
+
+if (!verify.ok) {
+  return res.status(401).json({
+    success: false,
+    error: "Pi Access Token غير صالح"
+  });
+}
+
+const piUser = await verify.json();
+
+if (piUser.uid !== piUserId) {
+  return res.status(401).json({
+    success: false,
+    error: "فشل التحقق من المستخدم"
+  });
+}
   
   ```
 if (!destination || !destination.startsWith("G")) {

@@ -231,7 +231,8 @@
         .sort(() => Math.random() - 0.5)
         .map(v => ({ v, open: false, done: false }));
 
-      render();
+      render();// إظهار زر مكافأة MGC ابتداءً من المستوى الأول
+document.getElementById("rewardCard").classList.remove("hidden");
     }
 
     function render() {

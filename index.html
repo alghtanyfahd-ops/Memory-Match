@@ -333,8 +333,7 @@
     function showRewardCard() {
       document.getElementById("rewardCard").classList.remove("hidden");
     }
-
-   async function claimMgc() {
+async function claimMgc() {
   const status = document.getElementById("claimStatus");
   const button = document.getElementById("claimMgcBtn");
 
@@ -377,6 +376,18 @@
         data.error || "فشل إرسال MGC"
       );
     }
+
+    status.textContent =
+      "تم إرسال 10 MGC بنجاح. رقم العملية: " +
+      data.transactionHash;
+
+  } catch (error) {
+    status.textContent =
+      "فشل الطلب: " + error.message;
+
+    button.disabled = false;
+  }
+}
 
     status.textContent =
       "تم إرسال 10 MGC بنجاح. رقم العملية: " +

@@ -10,8 +10,12 @@ return res.status(405).json({ error: "Method not allowed" });
 }
 
 try {
-const { destination } = req.body || {};
-
+const {
+  destination,
+  accessToken,
+  piUserId,
+  username
+} = req.body || {};
 ```
 if (!destination || !destination.startsWith("G")) {
   return res.status(400).json({

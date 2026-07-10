@@ -220,21 +220,26 @@
     }
 
     function newLevel() {
-      moves = 0;
-      first = null;
-      lock = false;
+  moves = 0;
+  first = null;
+  lock = false;
 
-      const pairs = getPairsForLevel();
-      const symbols = SYMBOLS.slice(0, pairs);
+  const pairs = getPairsForLevel();
+  const symbols = SYMBOLS.slice(0, pairs);
 
-      deck = [...symbols, ...symbols]
-        .sort(() => Math.random() - 0.5)
-        .map(v => ({ v, open: false, done: false }));
+  deck = [...symbols, ...symbols]
+    .sort(() => Math.random() - 0.5)
+    .map(v => ({
+      v,
+      open: false,
+      done: false
+    }));
 
-      render();// إظهار زر مكافأة MGC ابتداءً من المستوى الأول
-document.getElementById("rewardCard").classList.remove("hidden");
-    }
+  render();
 
+  // إظهار زر مكافأة MGC من المستوى الأول
+  document.getElementById("rewardCard").classList.remove("hidden");
+}
     function render() {
       document.getElementById("who").textContent = player;
       document.getElementById("level").textContent = level;

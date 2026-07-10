@@ -381,12 +381,13 @@ async function claimMgc() {
       "تم إرسال 10 MGC بنجاح. رقم العملية: " +
       data.transactionHash;
 
-  } catch (error) {
+   } catch (error) {
     status.textContent =
       "فشل الطلب: " + error.message;
 
     button.disabled = false;
   }
+}
 
     status.textContent =
       "تم إرسال 10 MGC بنجاح. رقم العملية: " +

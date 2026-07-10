@@ -485,49 +485,28 @@ function start(){
   openGame();
 
 }
+async function loginWithPi() {
 
+  try {
 
+    const auth = await Pi.authenticate(["username"]);
 
-async function loginWithPi(){
+    piUser = auth.user;
+    accessToken = auth.accessToken;
 
-try{
+    player = auth.user.username;
 
+    document.getElementById("name").value = player;
 
-const auth =
-await Pi.authenticate(
-["username"]
-);
+    openGame();
 
+  } catch (error) {
 
-piUser = auth.user;
+    alert("تعذر تسجيل الدخول عبر Pi");
 
-player =
-auth.user.username;
-
-
-document
-.getElementById("name")
-.value =
-player;
-
-
-openGame();
-
-
-
-}catch(error){
-
-
-alert(
-"تعذر تسجيل الدخول عبر Pi"
-);
-
+  }
 
 }
-
-
-}
-
 
 
 function openGame(){

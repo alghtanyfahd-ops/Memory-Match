@@ -381,6 +381,12 @@ async function claimMgc() {
       data.transactionHash;
 
   } catch (error) {
+       status.textContent =
+      "فشل الطلب: " + error.message;
+
+    button.disabled = false;
+  }
+} 
     status.textContent =
       "فشل الطلب: " + error.message;
 

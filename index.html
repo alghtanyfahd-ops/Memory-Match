@@ -160,8 +160,38 @@
 
    let piReady = false;
 
-async function initPi() {
+async function loginWithPi() {
+
   try {
+
+    if (!piReady) {
+
+      await initPi();
+
+    }
+
+    const auth = await Pi.authenticate(["username"]);
+
+    piUser = auth.user;
+
+    window.piAccessToken = auth.accessToken;
+
+    player = auth.user.username;
+
+    document.getElementById("name").value = player;
+
+    openGame();
+
+  } catch (error) {
+
+    alert("فشل تسجيل الدخول عبر Pi");
+
+    console.error(error);
+
+  }
+
+}
+
     await Pi.init({
       version: "2.0",
       sandbox: true

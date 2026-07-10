@@ -334,12 +334,61 @@
       document.getElementById("rewardCard").classList.remove("hidden");
     }
 
-    async function claimMgc() {
-      const status = document.getElementById("claimStatus");
-      const button = document.getElementById("claimMgcBtn");
-      const destination = document.getElementById("walletAddress").value.trim();
+   async function claimMgc() {
+  const status = document.getElementById("claimStatus");
+  const button = document.getElementById("claimMgcBtn");
 
-      if (!piUser) {
+  const destination = document
+    .getElementById("walletAddress")
+    .value
+    .trim();
+
+  if (!piUser) {
+    status.textContent = "سجّل الدخول عبر Pi أولًا.";
+    return;
+  }
+
+  if (!/^G[A-Z2-7]{55}$/.test(destination)) {
+    status.textContent =
+      "أدخل عنوان Stellar صحيحًا يبدأ بـ G ويحتوي على 56 حرفًا.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "جارٍ إرسال طلب المكافأة...";
+
+  try {
+    const response = await fetch("/api/claim-mgc", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        destination: destination,
+        level: 70,
+        proof: "completed"
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(
+        data.error || "فشل إرسال MGC"
+      );
+    }
+
+    status.textContent =
+      "تم إرسال 10 MGC بنجاح. رقم العملية: " +
+      data.transactionHash;
+
+  } catch (error) {
+    status.textContent =
+      "فشل الطلب: " + error.message;
+
+    button.disabled = false;
+  }
+}
         status.textContent = "سجّل الدخول عبر Pi أولًا.";
         return;
       }

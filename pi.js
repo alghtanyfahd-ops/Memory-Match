@@ -55,5 +55,5 @@ function isPiLoggedIn() {
 function getPiUsername() {
 
     return piUser ? piUser.username : "";
-
+window.loginWithPi = loginWithPi;
 }

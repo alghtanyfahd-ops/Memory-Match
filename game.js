@@ -416,11 +416,8 @@ function logout(){
 
 }
 
-
 window.logout = logout;
 
+console.log("game.js loaded successfully");
 
-
-console.log(
-    "game.js loaded successfully"
-);
+alert("game.js تم تحميله");

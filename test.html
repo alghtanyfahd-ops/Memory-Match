@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body>
 
+<button onclick="login()">
+تسجيل الدخول
+</button>
+
+<script>
+
+Pi.init({
+    version:"2.0",
+    sandbox:true
+});
+
+async function login(){
+
+    try{
+
+        const auth = await Pi.authenticate(["username"]);
+
+        alert(auth.user.username);
+
+    }catch(e){
+
+        alert(JSON.stringify(e));
+
+        console.log(e);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

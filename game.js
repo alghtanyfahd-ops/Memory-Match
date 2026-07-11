@@ -189,6 +189,8 @@ function flip(index){
             first = null;
             lock = false;
 
+            showLeaders();
+           
             render();
 
         },700);

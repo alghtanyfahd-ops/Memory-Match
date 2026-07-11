@@ -321,8 +321,111 @@ let audioCtx;
 let musicOn = false;
 let musicTimer;
 let musicStep = 0;
+
 document.getElementById("musicBtn").onclick = function(){
 
+    if(!musicOn){
+
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+
+        if(audioCtx.state === "suspended"){
+            audioCtx.resume();
+        }
+
+
+        const notes = [
+            261.63,
+            329.63,
+            392.00,
+            329.63,
+            293.66
+        ];
+
+
+        let step = 0;
+
+
+        function playNote(){
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+
+            osc.type = "sine";
+            osc.frequency.value = notes[step];
+
+
+            gain.gain.value = 0.05;
+
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+
+            osc.start();
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                audioCtx.currentTime + 0.6
+            );
+
+
+            osc.stop(
+                audioCtx.currentTime + 0.6
+            );
+
+
+            step =
+            (step + 1) % notes.length;
+
+        }
+
+
+        playNote();
+
+
+        musicTimer = setInterval(
+            playNote,
+            700
+        );
+
+
+        musicOn = true;
+
+
+        this.textContent =
+        "إيقاف الموسيقى 🔇";
+
+
+    }else{
+
+
+        clearInterval(musicTimer);
+
+
+        if(audioCtx){
+
+            audioCtx.close();
+
+            audioCtx = null;
+
+        }
+
+
+        musicOn = false;
+
+
+        this.textContent =
+        "تشغيل موسيقى هادئة 🎵";
+
+    }
+
+};    
     if(!musicOn){
 
         audioCtx = new (

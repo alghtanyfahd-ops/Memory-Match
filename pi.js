@@ -126,12 +126,17 @@ async function loginWithPi(){
 
 
 
-        if(typeof openGame === "function"){
+     if(typeof openGame === "function"){
 
-            openGame();
+    alert("وجدت دالة openGame");
 
-        }
+    openGame();
 
+}else{
+
+    alert("لا توجد دالة openGame");
+
+}
 
 
     }catch(error){

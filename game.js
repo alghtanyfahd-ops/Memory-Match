@@ -287,3 +287,148 @@ function flip(index){
     render();
 
 }
+// ==========================
+// فتح اللعبة
+// ==========================
+
+window.startGame = function(username){
+
+    player = username || "Player";
+
+
+    localStorage.mmPlayer =
+    player;
+
+
+    const name =
+    document.getElementById("name");
+
+
+    if(name){
+
+        name.value = player;
+
+    }
+
+
+    const login =
+    document.getElementById("login");
+
+
+    const game =
+    document.getElementById("game");
+
+
+    if(login){
+
+        login.classList.add("hidden");
+
+    }
+
+
+    if(game){
+
+        game.classList.remove("hidden");
+
+    }
+
+
+    newLevel();
+
+};
+
+
+
+// ==========================
+// حفظ التقدم
+// ==========================
+
+function saveProgress(){
+
+    localStorage.mmProgress =
+    JSON.stringify({
+
+        player: player,
+
+        level: level,
+
+        score: score,
+
+        coins: coins
+
+    });
+
+}
+
+
+
+// ==========================
+// تحميل التقدم
+// ==========================
+
+function loadProgress(){
+
+
+    const saved =
+    JSON.parse(
+        localStorage.mmProgress || "null"
+    );
+
+
+    if(saved && saved.player === player){
+
+
+        level =
+        saved.level || 1;
+
+
+        score =
+        saved.score || 0;
+
+
+        coins =
+        saved.coins || 0;
+
+
+    }
+
+}
+
+
+
+// ==========================
+// إعادة اللعبة
+// ==========================
+
+function resetGame(){
+
+    newLevel();
+
+}
+
+
+
+window.resetGame = resetGame;
+
+
+
+// ==========================
+// خروج
+// ==========================
+
+function logout(){
+
+    saveProgress();
+
+    location.reload();
+
+}
+
+
+window.logout = logout;
+
+
+
+console.log(
+    "game.js loaded successfully"
+);

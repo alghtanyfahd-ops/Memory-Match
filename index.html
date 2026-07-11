@@ -308,6 +308,15 @@ Memory Match
 
 <script>
 
+window.onerror = function(message, source, line){
+
+    alert(
+        "خطأ JavaScript\n\n" +
+        message +
+        "\n\nالسطر: " + line
+    );
+
+};    
 let audioCtx;
 let musicOn = false;
 let musicTimer;

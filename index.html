@@ -322,7 +322,60 @@ let musicOn = false;
 let musicTimer;
 let musicStep = 0;
 
-document.getElementById("musicBtn").onclick = () => {
+document.getElementById("musicBtn").onclick = function(){
+
+    if(!musicOn){
+
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.frequency.value = 440;
+        osc.type = "sine";
+
+        gain.gain.value = 0.05;
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+
+        setTimeout(()=>{
+
+            osc.stop();
+
+        },500);
+
+
+        musicOn = true;
+
+        this.textContent =
+        "إيقاف الموسيقى 🔇";
+
+
+    }else{
+
+
+        if(audioCtx){
+
+            audioCtx.close();
+            audioCtx = null;
+
+        }
+
+
+        musicOn = false;
+
+        this.textContent =
+        "تشغيل موسيقى هادئة 🎵";
+
+    }
+
+};
 
     if(!musicOn){
 

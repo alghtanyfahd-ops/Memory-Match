@@ -7,25 +7,36 @@ let piUser = null;
 let accessToken = null;
 
 
-
+// ==========================
 // تشغيل Pi SDK
+// ==========================
 
-Pi.init({
+if (typeof Pi === "undefined") {
 
-    version: "2.0",
+    alert("خطأ: Pi SDK غير محمل");
 
-    sandbox: true
+    console.error(
+        "Pi SDK not found"
+    );
 
-});
+} else {
 
 
+    Pi.init({
 
-// اختبار تحميل Pi
+        version: "2.0",
 
-console.log(
-    "Pi SDK Loaded:",
-    window.Pi
-);
+        sandbox: true
+
+    });
+
+
+    console.log(
+        "Pi SDK Loaded:",
+        window.Pi
+    );
+
+}
 
 
 
@@ -36,30 +47,56 @@ console.log(
 
 async function loginWithPi(){
 
+
     try{
 
 
-        alert("بدء تسجيل الدخول عبر Pi");
+        alert(
+            "بدء تسجيل الدخول عبر Pi"
+        );
 
 
 
-        const auth = await Pi.authenticate(
+        if(typeof Pi === "undefined"){
+
+            throw new Error(
+                "Pi SDK غير موجود"
+            );
+
+        }
+
+
+
+        const auth =
+        await Pi.authenticate(
             ["username"]
         );
 
 
 
-        piUser = auth.user;
+        console.log(
+            "Authentication:",
+            auth
+        );
+
+
+
+        piUser =
+        auth.user;
+
 
         accessToken =
         auth.accessToken;
 
 
 
-        console.log(
-            "Pi User:",
-            piUser
-        );
+        if(!piUser){
+
+            throw new Error(
+                "لم يتم استلام بيانات المستخدم"
+            );
+
+        }
 
 
 
@@ -68,10 +105,24 @@ async function loginWithPi(){
 
 
 
-        document
-        .getElementById("name")
-        .value =
-        playerName;
+        const nameInput =
+        document.getElementById("name");
+
+
+
+        if(nameInput){
+
+            nameInput.value =
+            playerName;
+
+        }
+
+
+
+        alert(
+            "تم تسجيل الدخول بنجاح: "
+            + playerName
+        );
 
 
 
@@ -92,18 +143,50 @@ async function loginWithPi(){
         );
 
 
+
         alert(
-            "فشل تسجيل الدخول عبر Pi\n" +
+
+            "خطأ Pi\n\n" +
+
+            "الرسالة: "
+            +
+            (error.message || "لا توجد رسالة")
+            +
+
+            "\n\nالكود: "
+            +
+            (error.code || "لا يوجد")
+            +
+
+            "\n\nالتفاصيل: "
+            +
             JSON.stringify(error)
+
         );
 
 
     }
 
+
 }
 
 
 
-// جعل الزر يستطيع الوصول للدالة
+// ==========================
+// تسجيل الخروج
+// ==========================
+
+
+function logoutPi(){
+
+    piUser = null;
+
+    accessToken = null;
+
+}
+
+
 
 window.loginWithPi = loginWithPi;
+
+window.logoutPi = logoutPi;

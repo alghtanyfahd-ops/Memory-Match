@@ -492,7 +492,7 @@ async function loginWithPi() {
 
     const auth = await Pi.authenticate(["username"]);
 
-    piUser = auth.user;
+    piUser = auth.user; accessToken = auth.accessToken;
     accessToken = auth.accessToken;
 
     player = auth.user.username;

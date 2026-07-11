@@ -16,7 +16,17 @@ async function loginWithPi() {
 
     try {
 
-        const auth = await Pi.authenticate(["username"]);
+        alert("1- بدأ تسجيل الدخول");
+
+        const auth = await Pi.authenticate(
+            ["username"],
+            function(payment){},
+            function(payment){}
+        );
+
+        alert("2- نجح تسجيل الدخول");
+
+        console.log(auth);
 
         piUser = auth.user;
         accessToken = auth.accessToken;
@@ -27,33 +37,14 @@ async function loginWithPi() {
 
         openGame();
 
-catch (err) {
+    } catch(err) {
 
-    console.error(err);
+        console.error(err);
 
-    alert(JSON.stringify(err));
+        alert(err.message || JSON.stringify(err));
 
-}
-
-// تسجيل الخروج
-function logoutPi() {
-
-    piUser = null;
-    accessToken = null;
+    }
 
 }
 
-// هل المستخدم مسجل؟
-function isPiLoggedIn() {
-
-    return piUser !== null;
-
-}
-
-// اسم المستخدم
-function getPiUsername() {
-
-    return piUser ? piUser.username : "";
-window.loginWithPi = loginWithPi;
-}
 window.loginWithPi = loginWithPi;

@@ -390,5 +390,58 @@ function showLeaders(){
 
 
 window.showLeaders = showLeaders;
+// ==========================
+// Daily Reward 🎁
+// ==========================
 
+function dailyReward(){
+
+    const today =
+    new Date().toDateString();
+
+
+    const lastReward =
+    localStorage.mmDailyReward;
+
+
+    if(lastReward !== today){
+
+
+        coins += 50;
+
+
+        localStorage.mmDailyReward =
+        today;
+
+
+        localStorage.mmCoins =
+        coins;
+
+
+        setTimeout(()=>{
+
+            alert(
+                "🎁 مكافأة يومية!\n\nحصلت على 50 عملة"
+            );
+
+        },500);
+
+
+    }
+
+}
+
+
+// تشغيل المكافأة عند بدء اللعبة
+
+const oldStartGame = window.startGame;
+
+
+window.startGame = function(username){
+
+    oldStartGame(username);
+
+    dailyReward();
+
+};
 console.log("game.js loaded successfully");

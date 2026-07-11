@@ -1,3 +1,10 @@
+window.onerror = function(message, source, line, column, error) {
+    alert(
+        "خطأ:\n" +
+        message +
+        "\nالسطر: " + line
+    );
+};
 // ==========================
 // Memory Match Game
 // ==========================

@@ -193,14 +193,13 @@ function logoutPi(){
 
 
 window.loginWithPi = loginWithPi;
-
 // ==========================
 // فتح اللعبة بعد تسجيل الدخول
 // ==========================
 
 window.openGame = function(){
 
-    localStorage.mmPlayer = player;
+    localStorage.mmPlayer = piUser.username;
 
 
     const login = document.getElementById("login");

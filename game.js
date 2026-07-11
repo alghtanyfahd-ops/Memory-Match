@@ -325,5 +325,68 @@ window.start = start;
 // ==========================
 // تم تحميل اللعبة
 // ==========================
+// ==========================
+// لوحة المتصدرين
+// ==========================
+
+function addLeader(){
+
+    let list = JSON.parse(
+        localStorage.mmLeaders || "[]"
+    );
+
+
+    list.push({
+
+        name: player,
+        score: score
+
+    });
+
+
+    list.sort(
+        (a,b)=> b.score - a.score
+    );
+
+
+    localStorage.mmLeaders =
+    JSON.stringify(
+        list.slice(0,10)
+    );
+
+}
+
+
+
+function showLeaders(){
+
+    const board =
+    document.getElementById("board");
+
+
+    if(!board) return;
+
+
+    const list =
+    JSON.parse(
+        localStorage.mmLeaders || "[]"
+    );
+
+
+    board.innerHTML =
+    list.length ?
+
+    list.map((x,i)=>
+    `<li>${i+1}- ${x.name} : ${x.score}</li>`
+    ).join("")
+    
+    :
+
+    "<li>لا توجد نتائج بعد</li>";
+
+}
+
+
+window.showLeaders = showLeaders;
 
 console.log("game.js loaded successfully");

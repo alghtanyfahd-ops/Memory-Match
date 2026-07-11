@@ -58,7 +58,9 @@ function newLevel(){
             open: false,
             done: false
         }));
+function render(){
 
+    alert("render");
     render();
 }
 

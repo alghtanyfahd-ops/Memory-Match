@@ -479,28 +479,27 @@ async function loginWithPi() {
 }
 
 
-function openGame(){
+async function openGame(){
 
-localStorage.mmPlayer =
-player;
+    localStorage.mmPlayer = player;
 
+    await loadPlayerData(player);
 
-loadProgress();
-
-
-document
-.getElementById("login")
-.classList
-.add("hidden");
+    document
+    .getElementById("login")
+    .classList
+    .add("hidden");
 
 
-document
-.getElementById("game")
-.classList
-.remove("hidden");
+    document
+    .getElementById("game")
+    .classList
+    .remove("hidden");
 
 
-newLevel();
+    newLevel();
+
+}
 
 } function loadProgress(){
 

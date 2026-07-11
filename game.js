@@ -359,13 +359,6 @@ function addLeader(){
 }
 
 
-
-function showLeaders(){
-
-    const board =
-    document.getElementById("board");
-
-
     if(!board) return;
 
 

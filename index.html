@@ -317,12 +317,60 @@ window.onerror = function(message, source, line){
     );
 
 };    
-let audioCtx;
+
+let audioCtx = null;
 let musicOn = false;
-let musicTimer;
+let musicTimer = null;
 let musicStep = 0;
 
-document.getElementById("musicBtn").onclick = function(){
+const melody = [
+    261.63,
+    293.66,
+    329.63,
+    392.00,
+    329.63,
+    293.66,
+    261.63
+];
+
+
+function playTone(freq){
+
+    if(!audioCtx) return;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(
+        0.001,
+        audioCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.05,
+        audioCtx.currentTime + 0.1
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioCtx.currentTime + 0.7
+    );
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.8);
+
+}
+
+
+document
+.getElementById("musicBtn")
+.onclick = async function(){
 
     if(!musicOn){
 
@@ -332,70 +380,25 @@ document.getElementById("musicBtn").onclick = function(){
         )();
 
 
-        if(audioCtx.state === "suspended"){
-            audioCtx.resume();
-        }
-
-
-        const notes = [
-            261.63,
-            329.63,
-            392.00,
-            329.63,
-            293.66
-        ];
-
-
-        let step = 0;
-
-
-        function playNote(){
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-
-            osc.type = "sine";
-            osc.frequency.value = notes[step];
-
-
-            gain.gain.value = 0.05;
-
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-
-            osc.start();
-
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                audioCtx.currentTime + 0.6
-            );
-
-
-            osc.stop(
-                audioCtx.currentTime + 0.6
-            );
-
-
-            step =
-            (step + 1) % notes.length;
-
-        }
-
-
-        playNote();
-
-
-        musicTimer = setInterval(
-            playNote,
-            700
-        );
+        await audioCtx.resume();
 
 
         musicOn = true;
+
+
+        musicTimer = setInterval(()=>{
+
+            playTone(
+                melody[musicStep]
+            );
+
+            musicStep++;
+
+            if(musicStep >= melody.length){
+                musicStep = 0;
+            }
+
+        },700);
 
 
         this.textContent =
@@ -410,7 +413,7 @@ document.getElementById("musicBtn").onclick = function(){
 
         if(audioCtx){
 
-            audioCtx.close();
+            await audioCtx.close();
 
             audioCtx = null;
 

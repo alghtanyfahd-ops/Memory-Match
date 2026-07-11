@@ -11,37 +11,7 @@ let moves = 0;
 let first = null;
 let lock = false;
 let deck = [];
-// ==========================
-// Game Sounds
-// ==========================
 
-const sounds = {
-
-    flip: new Audio(
-        "melo-rock-13-by-ende-dot-app.mp3"
-    ),
-
-};
-
-
-function playSound(){
-
-    try{
-
-        let s =
-        sounds.flip.cloneNode();
-
-        s.volume = 0.15;
-
-        s.play();
-
-    }catch(e){
-
-        console.log(e);
-
-    }
-
-}
 const MAX_LEVEL = 70;
 
 const SYMBOLS = [

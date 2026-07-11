@@ -444,4 +444,97 @@ window.startGame = function(username){
     dailyReward();
 
 };
+// ==========================
+// Save Score Online
+// ==========================
+
+async function saveScore(){
+
+    try{
+
+        await fetch("/api/leaderboard",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                name: player,
+                score: score,
+                level: level
+
+            })
+
+        });
+
+
+        showLeaders();
+
+
+    }catch(error){
+
+        console.log(
+            "Leaderboard error",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================
+// Show Leaderboard
+// ==========================
+
+async function showLeaders(){
+
+    const board =
+    document.getElementById("board");
+
+
+    if(!board) return;
+
+
+    try{
+
+        const res =
+        await fetch("/api/leaderboard");
+
+
+        const data =
+        await res.json();
+
+
+        if(!data.ok) return;
+
+
+        board.innerHTML =
+        data.players.map((p,i)=>{
+
+            return `
+            <li>
+            🏆 ${i+1}
+            - ${p.name}
+            : ${p.score}
+            نقطة
+            </li>
+            `;
+
+        }).join("");
+
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+
+window.showLeaders = showLeaders;
 console.log("game.js loaded successfully");

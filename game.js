@@ -129,7 +129,7 @@ function flip(index){
         return;
     }
 
-    card.open = true;playSound();
+    card.open = true;
 
     if(first === null){
 

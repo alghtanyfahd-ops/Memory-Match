@@ -313,10 +313,7 @@ let musicOn = false;
 let musicTimer;
 let musicStep = 0;
 
-
-document
-.getElementById("musicBtn")
-.onclick = () => {
+document.getElementById("musicBtn").onclick = () => {
 
     if(!musicOn){
 
@@ -327,77 +324,43 @@ document
 
         musicOn = true;
 
-        document
-        .getElementById("musicBtn")
-        .textContent =
+        document.getElementById("musicBtn").textContent =
         "إيقاف الموسيقى 🔇";
 
     }else{
 
         if(audioCtx){
+
             audioCtx.close();
             audioCtx = null;
+
         }
 
         musicOn = false;
 
-        document
-        .getElementById("musicBtn")
-        .textContent =
+        document.getElementById("musicBtn").textContent =
         "تشغيل موسيقى هادئة 🎵";
+
     }
 
 };
-
 
 window.onload = () => {
 
     if(localStorage.mmPlayer){
 
-        document
-        .getElementById("name")
-        .value =
+        document.getElementById("name").value =
         localStorage.mmPlayer;
 
     }
 
 };
 
-<script>
-
-<script>
-
-function openGame(){
-
-    localStorage.mmPlayer = player;
-
-    document
-    .getElementById("login")
-    .classList.add("hidden");
-
-
-    document
-    .getElementById("game")
-    .classList.remove("hidden");
-
-
-    if(typeof newLevel === "function"){
-
-        newLevel();
-
-    }
-
-    alert("openGame تعمل");
-
-}
-
 </script>
-
 
 <script src="game.js"></script>
 
 <script src="pi.js"></script>
 
-
 </body>
-</html>    
+</html>

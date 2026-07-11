@@ -982,27 +982,24 @@ location.reload();
 
 
 
+<script>
 
-window.onload = ()=>{
+// ===== كل كود اللعبة =====
 
+window.onload = () => {
 
-if(localStorage.mmPlayer){
+    if(localStorage.mmPlayer){
 
+        document.getElementById("name").value =
+        localStorage.mmPlayer;
 
-document
-.getElementById("name")
-.value =
-localStorage.mmPlayer;
-
-
-}
-
+    }
 
 };
 
-<script src="pi.js"></script>
 </script>
 
-</body>
+<script src="pi.js"></script>
 
-</html> 
+</body>
+</html>

@@ -138,10 +138,11 @@ function render(){
 
 
 
-        btn.textContent =
-        (card.open || card.done)
-        ? card.v
-        : "?";
+       if(card.open || card.done){
+    btn.textContent = card.v;
+}else{
+    btn.textContent = "?";
+}
 
 
 

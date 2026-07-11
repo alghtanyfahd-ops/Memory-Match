@@ -41,13 +41,10 @@ async function loginWithPi() {
         openGame();
 
     } catch(err) {
+console.error("Pi Error:", err);
 
-        console.error(err);
-
-        alert(err.message || JSON.stringify(err));
-
-    }
-
-}
-
-window.loginWithPi = loginWithPi;
+alert(
+    "الرسالة: " + (err.message || "") +
+    "\nالكود: " + (err.code || "") +
+    "\nالبيانات: " + JSON.stringify(err)
+);

@@ -11,6 +11,9 @@ Pi.init({
     sandbox: true
 });
 
+console.log("Pi =", window.Pi);
+alert(typeof Pi);
+
 // تسجيل الدخول
 async function loginWithPi() {
 

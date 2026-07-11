@@ -194,4 +194,37 @@ function logoutPi(){
 
 window.loginWithPi = loginWithPi;
 
-window.logoutPi = logoutPi;
+// ==========================
+// فتح اللعبة بعد تسجيل الدخول
+// ==========================
+
+window.openGame = function(){
+
+    localStorage.mmPlayer = player;
+
+
+    const login = document.getElementById("login");
+    const game = document.getElementById("game");
+
+
+    if(login){
+
+        login.classList.add("hidden");
+
+    }
+
+
+    if(game){
+
+        game.classList.remove("hidden");
+
+    }
+
+
+    if(typeof newLevel === "function"){
+
+        newLevel();
+
+    }
+
+};

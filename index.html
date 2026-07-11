@@ -2,253 +2,308 @@
 <html lang="ar" dir="rtl">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>لعبة مطابقة الذاكرة</title>
+<meta charset="utf-8">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #101827;
-      color: #fff;
-      min-height: 100vh;
-    }
+<title>Memory Match - Pi Game</title>
 
-    .app {
-      max-width: 900px;
-      margin: auto;
-      padding: 24px;
-    }
+<!-- Pi SDK -->
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 10px 30px #0004;
-    }
+<style>
 
-    h1,
-    h2 {
-      color: #fbbf24;
-    }
+*{
+    box-sizing:border-box;
+}
 
-    .hidden {
-      display: none;
-    }
+body{
 
-    input,
-    button {
-      font: inherit;
-      border-radius: 10px;
-      padding: 11px;
-      border: 0;
-    }
+    margin:0;
+    font-family:system-ui,sans-serif;
+    background:#101827;
+    color:white;
+    min-height:100vh;
 
-    input {
-      width: 100%;
-      margin: 7px 0;
-      background: #fff;
-      color: #111;
-    }
+}
 
-    button {
-      background: #fbbf24;
-      color: #111;
-      font-weight: 800;
-      cursor: pointer;
-      margin: 6px 0;
-    }
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
+.app{
 
-    .bar,
-    .stats,
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    max-width:900px;
+    margin:auto;
+    padding:24px;
 
-    .bar {
-      align-items: center;
-      justify-content: space-between;
-      margin: 15px 0;
-    }
+}
 
-    .pill {
-      background: #334155;
-      padding: 8px 12px;
-      border-radius: 999px;
-    }
 
-    .grid {
-      display: grid;
-      gap: 10px;
-      margin-top: 20px;
-    }
+.card{
 
-    .tile {
-      aspect-ratio: 1;
-      background: #334155;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      font-size: clamp(22px, 6vw, 46px);
-    }
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 10px 30px #0004;
 
-    .tile.open,
-    .tile.done {
-      background: #fff;
-      color: #111;
-    }
+}
 
-    .tile.done {
-      background: #86efac;
-    }
 
-    .leader li {
-      padding: 8px;
-      border-bottom: 1px solid #334155;
-    }
+h1,h2{
 
-    .note {
-      color: #cbd5e1;
-    }
-  </style>
+    color:#fbbf24;
 
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+}
+
+
+.hidden{
+
+    display:none;
+
+}
+
+
+input,button{
+
+    font:inherit;
+    border-radius:10px;
+    padding:11px;
+    border:0;
+
+}
+
+
+input{
+
+    width:100%;
+    margin:7px 0;
+    background:white;
+    color:#111;
+
+}
+
+
+button{
+
+    background:#fbbf24;
+    color:#111;
+    font-weight:800;
+    cursor:pointer;
+    margin:6px 0;
+
+}
+
+
+button:disabled{
+
+    opacity:.6;
+
+}
+
+
+.bar,
+.stats,
+.actions{
+
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+
+}
+
+
+.bar{
+
+    align-items:center;
+    justify-content:space-between;
+    margin:15px 0;
+
+}
+
+
+.pill{
+
+    background:#334155;
+    padding:8px 12px;
+    border-radius:999px;
+
+}
+
+
+.grid{
+
+    display:grid;
+    gap:10px;
+    margin-top:20px;
+
+}
+
+
+.tile{
+
+    aspect-ratio:1;
+    background:#334155;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    font-size:clamp(22px,6vw,46px);
+
+}
+
+
+.tile.open,
+.tile.done{
+
+    background:white;
+    color:#111;
+
+}
+
+
+.tile.done{
+
+    background:#86efac;
+
+}
+
+
+.leader li{
+
+    padding:8px;
+    border-bottom:1px solid #334155;
+
+}
+
+</style>
 
 </head>
 
 
 <body>
 
-<main class="app">
 
-  <section id="login" class="card">
+<main class="app"><section id="login" class="card">
 
-    <h1>لعبة مطابقة الذاكرة</h1>
+<h1>
+لعبة مطابقة الذاكرة
+</h1>
 
-    <p>
-      طابق البطاقات، اجمع النقاط، وأكمل 70 مستوى.
-    </p>
-
-    <input 
-      id="name"
-      maxlength="18"
-      placeholder="اكتب اسم اللاعب"
-    >
-
-    <button onclick="start()">
-      ابدأ اللعبة
-    </button>
-
-    <button onclick="loginWithPi()">
-      تسجيل الدخول عبر Pi
-    </button>
+<p>
+طابق البطاقات، اجمع العملات، وتقدم عبر 70 مستوى.
+</p>
 
 
-  </section>
+<input 
+id="name"
+maxlength="18"
+placeholder="اكتب اسم اللاعب"
+/>
 
 
-  <section id="game" class="hidden">
+<button onclick="start()">
+ابدأ اللعبة
+</button>
 
 
-    <div class="bar">
-
-      <h1>
-        لعبة مطابقة الذاكرة
-      </h1>
+<button onclick="loginWithPi()">
+تسجيل الدخول عبر Pi
+</button>
 
 
-      <div class="actions">
-
-        <button id="musicBtn">
-          تشغيل موسيقى هادئة 🎵
-        </button>
-
-
-        <button onclick="resetGame()">
-          إعادة المستوى
-        </button>
-
-
-        <button onclick="logout()">
-          خروج
-        </button>
-
-      </div>
-
-    </div>
+</section>
 
 
 
-    <div class="stats">
-
-      <span class="pill">
-        اللاعب:
-        <b id="who"></b>
-      </span>
+<section id="game" class="hidden">
 
 
-      <span class="pill">
-        المستوى:
-        <b id="level"></b>
-        / 70
-      </span>
+<div class="bar">
+
+<h1>
+Memory Match
+</h1>
 
 
-      <span class="pill">
-        النقاط:
-        <b id="score"></b>
-      </span>
+<div class="actions">
 
 
-      <span class="pill">
-        الحركات:
-        <b id="moves"></b>
-      </span>
+<button id="musicBtn">
+تشغيل موسيقى هادئة 🎵
+</button>
 
 
-      <span class="pill">
-        المربعات:
-        <b id="tiles"></b>
-      </span>
+<button onclick="resetGame()">
+إعادة المستوى
+</button>
 
-    </div>     <section id="rewardCard" class="card hidden" style="margin-top:18px">
+
+<button onclick="logout()">
+خروج
+</button>
+
+
+</div>
+
+</div>
 
 
 
-    <div id="grid" class="grid"></div>
+<div class="stats">
+
+
+<span class="pill">
+اللاعب:
+<b id="who"></b>
+</span>
+
+
+<span class="pill">
+المستوى:
+<b id="level"></b>
+/70
+</span>
+
+
+<span class="pill">
+النقاط:
+<b id="score"></b>
+</span>
+
+
+<span class="pill">
+العملات:
+<b id="coins"></b>
+</span>
+
+
+<span class="pill">
+الحركات:
+<b id="moves"></b>
+</span>
+
+
+</div>
 
 
 
-    <section class="card" style="margin-top:18px">
-
-      <h2>
-        لوحة المتصدرين
-      </h2>
-
-      <ol id="board" class="leader"></ol>
-
-    </section>
+<div id="grid" class="grid"></div>
 
 
-  </section>
+
+<section class="card" style="margin-top:18px">
+
+<h2>
+لوحة المتصدرين
+</h2>
 
 
-</main>
+<ol id="board" class="leader"></ol>
 
+
+</section>
+
+
+</section></main>
 
 
 <script>
@@ -259,738 +314,49 @@ let musicTimer;
 let musicStep = 0;
 
 
-function startMusic() {
-
-  audioCtx = new (
-    window.AudioContext ||
-    window.webkitAudioContext
-  )();
-
-
-  const melody = [
-    261.63,
-    293.66,
-    329.63,
-    392.00,
-    329.63,
-    293.66,
-    246.94,
-    293.66
-  ];
-
-
-  function playSoftTone(freq) {
-
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-
-    osc.type = "sine";
-    osc.frequency.value = freq;
-
-
-    gain.gain.setValueAtTime(
-      0.001,
-      audioCtx.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.035,
-      audioCtx.currentTime + 0.08
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,
-      audioCtx.currentTime + 0.65
-    );
-
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.7);
-
-  }
-
-
-  playSoftTone(melody[musicStep]);
-
-
-  musicTimer = setInterval(() => {
-
-    musicStep =
-      (musicStep + 1) %
-      melody.length;
-
-
-    playSoftTone(
-      melody[musicStep]
-    );
-
-  },700);
-
-}
-
-
-
-function stopMusic(){
-
-  clearInterval(musicTimer);
-
-
-  if(audioCtx){
-
-    audioCtx.close();
-    audioCtx = null;
-
-  }
-
-}
-
-
-
 document
 .getElementById("musicBtn")
 .onclick = () => {
 
-
-  if(!musicOn){
-
-    startMusic();
-
-    musicOn = true;
-
-    document.getElementById("musicBtn")
-    .textContent =
-    "إيقاف الموسيقى 🔇";
-
-
-  }else{
-
-
-    stopMusic();
-
-    musicOn = false;
-
-
-    document.getElementById("musicBtn")
-    .textContent =
-    "تشغيل موسيقى هادئة 🎵";
-
-  }
-
-};
-
-
-
-const MAX_LEVEL = 70;
-
-
-const SYMBOLS = [
-
-"🐶","🐱","🐭","🐰","🦊",
-"🐼","🐨","🐯","🦁","🐸",
-"🐵","🐷","🐮","🐔","🐧",
-"🦄","🐝","🦋","🐢","🐬",
-
-"1","2","3","4","5",
-"6","7","8","9","0",
-
-"🏠","🏡","🏢","🏰",
-"🚗","🚕","🚌","🚙",
-
-"🌱","🌿","🌵","🌳",
-"🌸","🌻","🌹","🍀"
-
-];
-
-
-
-let player = "";
-let level = 1;
-let score = 0;
-  let coins = 0;
-let moves = 0;
-let first = null;
-let lock = false;
-let deck = [];
-let piUser = null;
-
-
-
-
-Pi.init({
-  version:"2.0",
-  sandbox:true
-});
-
-
-
-function start(){
-
-  player =
-  document
-  .getElementById("name")
-  .value
-  .trim();
-
-
-  if(!player){
-
-    alert(
-      "اكتب اسم اللاعب أولًا"
-    );
-
-    return;
-  }
-
-
-  level = 1;
-  score = 0;
-
-
-  openGame();
-
-}
-
-
-  try {
-
-    const auth = await Pi.authenticate(["username"]);
-
-    piUser = auth.user; accessToken = auth.accessToken;
-    accessToken = auth.accessToken;
-
-    player = auth.user.username;
-
-    document.getElementById("name").value = player;
-
-    openGame();
-
-  } catch (error) {
-
-    alert("تعذر تسجيل الدخول عبر Pi");
-
-  }
-
-}
-
-
-async function openGame(){
-
-    localStorage.mmPlayer = player;
-
-    await loadPlayerData(player);
-
-    document
-    .getElementById("login")
-    .classList
-    .add("hidden");
-
-
-    document
-    .getElementById("game")
-    .classList
-    .remove("hidden");
-
-
-    newLevel();
-
-}
-
-} function loadProgress(){
-
-  const saved =
-  JSON.parse(
-    localStorage.mmProgress || "null"
-  );
-
-
-  if(saved && saved.player === player){
-
-    level =
-    Math.min(
-      saved.level || 1,
-      MAX_LEVEL
-    );
-
-
-    score =
-    saved.score || 0;
-
-  }
-
-}
-
-
-
-function saveProgress(){
-
-  localStorage.mmProgress =
-  JSON.stringify({
-    player,
-    level,
-    score
-  });
-
-}
-
-
-
-function getPairsForLevel(){
-
-  return Math.min(
-    4 + Math.floor((level - 1) / 2),
-    22
-  );
-
-}
-
-
-
-function getColumns(total){
-
-  if(total <= 16) return 4;
-  if(total <= 24) return 5;
-  if(total <= 36) return 6;
-
-  return 7;
-
-}
-
-
-
-function newLevel(){
-
-  moves = 0;
-  first = null;
-  lock = false;
-
-
-  const pairs =
-  getPairsForLevel();
-
-
-  const symbols =
-  SYMBOLS.slice(0,pairs);
-
-
-  deck =
-  [...symbols,...symbols]
-  .sort(() => Math.random() - 0.5)
-  .map(v => ({
-    v,
-    open:false,
-    done:false
-  }));
-
-
-  render();
-
-}
-
-
-
-function render(){
-
-  document.getElementById("who")
-  .textContent = player;
-
-
-  document.getElementById("level")
-  .textContent = level;
-
-
-  document.getElementById("score")
-  .textContent = score;
-
-
-  document.getElementById("moves")
-  .textContent = moves;
-
-
-  document.getElementById("tiles")
-  .textContent = deck.length;
-
-
-
-  const grid =
-  document.getElementById("grid");
-
-
-  grid.innerHTML = "";
-
-
-  grid.style.gridTemplateColumns =
-  `repeat(${getColumns(deck.length)},1fr)`;
-
-
-
-  deck.forEach((c,i)=>{
-
-
-    const b =
-    document.createElement("button");
-
-
-    b.className =
-    "tile " +
-    ((c.open || c.done) ? "open " : "") +
-    (c.done ? "done" : "");
-
-
-    b.textContent =
-    (c.open || c.done)
-    ? c.v
-    : "?";
-
-
-    b.onclick =
-    () => flip(i);
-
-
-    grid.appendChild(b);
-
-
-  });
-
-
-
-  leaders();
-
-}
-
-
-
-
-function flip(i){
-
-const c = deck[i];
-
-
-if(lock || c.open || c.done)
-return;
-
-
-c.open = true;
-
-
-
-if(first === null){
-
-  first = i;
-
-  render();
-
-  return;
-
-}
-
-
-
-moves++;
-
-
-const f =
-deck[first];
-
-
-
-if(f.v === c.v){
-
-
-  f.done = true;
-  c.done = true;
-
-
-  score += 10 + level;
-  coins += 5;
-savePlayerData();
-
-  first = null;
-
-
-
-  if(deck.every(x => x.done)){
-
-
-    if(level < MAX_LEVEL){
-
-      level++;
-
-      saveProgress();
-
-      setTimeout(
-        newLevel,
-        700
-      );
-
+    if(!musicOn){
+
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+        musicOn = true;
+
+        document
+        .getElementById("musicBtn")
+        .textContent =
+        "إيقاف الموسيقى 🔇";
 
     }else{
 
+        if(audioCtx){
+            audioCtx.close();
+            audioCtx = null;
+        }
 
-     
+        musicOn = false;
 
-
-      addLeader();
-
-
-      saveProgress();
-
-
-      alert(
-      "مبروك! أكملت جميع المستويات"
-      );
-
-
+        document
+        .getElementById("musicBtn")
+        .textContent =
+        "تشغيل موسيقى هادئة 🎵";
     }
 
-  }
+};
 
-
-
-}else{
-
-
-lock = true;
-
-
-setTimeout(()=>{
-
-
-  f.open = false;
-
-  c.open = false;
-
-  first = null;
-
-  lock = false;
-
-
-  render();
-
-
-},700);
-
-
-
-}
-
-
-
-render();
-
-
-}
-
-
-
-
-
-const status =
-document.getElementById("claimStatus");
-
-
-
-const destination =
-document
-.getElementById("walletAddress")
-.value
-.trim();
-
-
-
-if(!piUser){
-
-status.textContent =
-"سجّل الدخول عبر Pi أولًا.";
-
-return;
-
-}
-
-
-
-if(!/^G[A-Z2-7]{55}$/.test(destination)){
-
-
-status.textContent =
-"عنوان Stellar غير صالح";
-
-
-return;
-
-
-}
-
-
-
-button.disabled = true;
-
-
-status.textContent =
-"جارٍ إرسال المكافأة...";
-
-
-
-try{
-
-
-const response =
-await fetch(
-"/api/claim-mgc",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-
-body: JSON.stringify({
-  destination: destination,
-  level: 70,
-  proof: "completed"
-})
-
-
-
-const data =
-await response.json();
-
-
-
-if(!response.ok || !data.ok){
-
-throw new Error(
-data.error || "فشل الإرسال"
-);
-
-}
-
-
-
-status.textContent =
-"تم إرسال 10 MGC بنجاح. رقم العملية: "
-+
-data.transactionHash;
-
-
-
-}catch(error){
-
-
-status.textContent =
-"فشل الطلب: "
-+
-error.message;
-
-
-button.disabled = false;
-
-
-}
-
-
-}
-
-
-
-
-
-function addLeader(){
-
-const list =
-JSON.parse(
-localStorage.mmLeaders || "[]"
-);
-
-
-list.push({
-n:player,
-s:score
-});
-
-
-list.sort(
-(a,b)=>b.s-a.s
-);
-
-
-localStorage.mmLeaders =
-JSON.stringify(
-list.slice(0,10)
-);
-
-
-}
-
-
-
-
-function leaders(){
-
-const list =
-JSON.parse(
-localStorage.mmLeaders || "[]"
-);
-
-
-
-document
-.getElementById("board")
-.innerHTML =
-
-list.length
-
-?
-
-list.map(x =>
-`<li>${x.n} - ${x.s}</li>`
-).join("")
-
-:
-
-"<li>لا توجد نتائج بعد</li>";
-
-}
-
-
-
-
-function resetGame(){
-
-newLevel();
-
-}
-
-
-
-
-function logout(){
-
-saveProgress();
-
-location.reload();
-
-}
-
-
-
-<script>
-
-// ===== كل كود اللعبة =====
 
 window.onload = () => {
 
     if(localStorage.mmPlayer){
 
-        document.getElementById("name").value =
+        document
+        .getElementById("name")
+        .value =
         localStorage.mmPlayer;
 
     }
@@ -999,7 +365,14 @@ window.onload = () => {
 
 </script>
 
+
+<!-- ملفات النظام -->
+
 <script src="pi.js"></script>
 
+<script src="game.js"></script>
+
+
 </body>
+
 </html>

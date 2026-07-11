@@ -130,7 +130,7 @@ async function loginWithPi(){
 
     alert("وجدت دالة openGame");
 
-    openGame();
+    startGame(playerName);
 
 }else{
 

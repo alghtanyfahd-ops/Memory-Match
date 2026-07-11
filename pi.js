@@ -58,3 +58,4 @@ function getPiUsername() {
     return piUser ? piUser.username : "";
 window.loginWithPi = loginWithPi;
 }
+window.loginWithPi = loginWithPi;

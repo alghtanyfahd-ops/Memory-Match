@@ -325,7 +325,11 @@ window.startGame = function(username){
 
     }
 
+function newLevel(){
 
+    alert("newLevel");
+
+    moves = 0;
     newLevel();
 
 };

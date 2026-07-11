@@ -2,7 +2,6 @@
 // Pi Login System
 // ==========================
 
-
 let piUser = null;
 let accessToken = null;
 
@@ -13,14 +12,9 @@ let accessToken = null;
 
 if (typeof Pi === "undefined") {
 
-    alert("خطأ: Pi SDK غير محمل");
-
-    console.error(
-        "Pi SDK not found"
-    );
+    console.error("Pi SDK not loaded");
 
 } else {
-
 
     Pi.init({
 
@@ -30,41 +24,16 @@ if (typeof Pi === "undefined") {
 
     });
 
-
-    console.log(
-        "Pi SDK Loaded:",
-        window.Pi
-    );
-
 }
-
 
 
 // ==========================
 // تسجيل الدخول عبر Pi
 // ==========================
 
-
 async function loginWithPi(){
 
-
-    try{
-
-
-        alert(
-            "بدء تسجيل الدخول عبر Pi"
-        );
-
-
-
-        if(typeof Pi === "undefined"){
-
-            throw new Error(
-                "Pi SDK غير موجود"
-            );
-
-        }
-
+    try {
 
 
         const auth =
@@ -73,17 +42,7 @@ async function loginWithPi(){
         );
 
 
-
-        console.log(
-            "Authentication:",
-            auth
-        );
-
-
-
-        piUser =
-        auth.user;
-
+        piUser = auth.user;
 
         accessToken =
         auth.accessToken;
@@ -109,37 +68,29 @@ async function loginWithPi(){
         document.getElementById("name");
 
 
-
         if(nameInput){
 
-            nameInput.value =
-            playerName;
+            nameInput.value = playerName;
 
         }
 
 
 
-        alert(
-            "تم تسجيل الدخول بنجاح: "
-            + playerName
-        );
+        // فتح اللعبة
+
+        if(typeof startGame === "function"){
+
+            startGame(playerName);
+
+        }
+        else if(typeof openGame === "function"){
+
+            openGame();
+
+        }
 
 
-
-     if(typeof openGame === "function"){
-
-    alert("وجدت دالة openGame");
-
-    startGame(playerName);
-
-}else{
-
-    alert("لا توجد دالة openGame");
-
-}
-
-
-    }catch(error){
+    } catch(error){
 
 
         console.error(
@@ -148,62 +99,35 @@ async function loginWithPi(){
         );
 
 
-
         alert(
-
-            "خطأ Pi\n\n" +
-
-            "الرسالة: "
-            +
-            (error.message || "لا توجد رسالة")
-            +
-
-            "\n\nالكود: "
-            +
-            (error.code || "لا يوجد")
-            +
-
-            "\n\nالتفاصيل: "
-            +
-            JSON.stringify(error)
-
+            "تعذر تسجيل الدخول عبر Pi"
         );
-
 
     }
 
-
 }
 
 
-
-// ==========================
-// تسجيل الخروج
-// ==========================
-
-
-function logoutPi(){
-
-    piUser = null;
-
-    accessToken = null;
-
-}
-
-
+// جعل الزر يعمل
 
 window.loginWithPi = loginWithPi;
+
+
+
 // ==========================
-// فتح اللعبة بعد تسجيل الدخول
+// فتح اللعبة
 // ==========================
 
 window.openGame = function(){
 
-    localStorage.mmPlayer = piUser.username;
+
+    const login =
+    document.getElementById("login");
 
 
-    const login = document.getElementById("login");
-    const game = document.getElementById("game");
+    const game =
+    document.getElementById("game");
+
 
 
     if(login){

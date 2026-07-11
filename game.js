@@ -157,7 +157,7 @@ function flip(index){
 
             if(level < MAX_LEVEL){
 
-                level++;
+                level++;saveScore();
 
                 setTimeout(() => {
 

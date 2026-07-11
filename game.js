@@ -154,7 +154,7 @@ function flip(index){
         first = null;
 
         if(deck.every(c => c.done)){
-
+celebrateWin();
             if(level < MAX_LEVEL){
 
                 level++;saveScore();

@@ -43,34 +43,23 @@ function newLevel(){
     first = null;
     lock = false;
 
+    let pairs = 4 + Math.floor((level - 1) / 2);
 
-    const pairs =
-    Math.min(
-        4 + Math.floor((level - 1) / 2),
-        SYMBOLS.length
-    );
+    if(pairs > Math.floor(SYMBOLS.length / 1)){
+        pairs = SYMBOLS.length;
+    }
 
+    const symbols = SYMBOLS.slice(0, pairs);
 
-    const symbols =
-    SYMBOLS.slice(0,pairs);
-
-
-    deck =
-    [...symbols,...symbols]
-    .sort(
-        () => Math.random() - 0.5
-    )
-    .map(v => ({
-
-        v:v,
-        open:false,
-        done:false
-
-    }));
-
+    deck = [...symbols, ...symbols]
+        .sort(() => Math.random() - 0.5)
+        .map(symbol => ({
+            v: symbol,
+            open: false,
+            done: false
+        }));
 
     render();
-
 }
 
 

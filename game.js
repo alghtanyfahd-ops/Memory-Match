@@ -331,58 +331,7 @@ window.start = start;
 // لوحة المتصدرين
 // ==========================
 
-function addLeader(){
 
-    let list = JSON.parse(
-        localStorage.mmLeaders || "[]"
-    );
-
-
-    list.push({
-
-        name: player,
-        score: score
-
-    });
-
-
-    list.sort(
-        (a,b)=> b.score - a.score
-    );
-
-
-    localStorage.mmLeaders =
-    JSON.stringify(
-        list.slice(0,10)
-    );
-
-}
-
-
-    if(!board) return;
-
-
-    const list =
-    JSON.parse(
-        localStorage.mmLeaders || "[]"
-    );
-
-
-    board.innerHTML =
-    list.length ?
-
-    list.map((x,i)=>
-    `<li>${i+1}- ${x.name} : ${x.score}</li>`
-    ).join("")
-    
-    :
-
-    "<li>لا توجد نتائج بعد</li>";
-
-}
-
-
-window.showLeaders = showLeaders;
 // ==========================
 // Daily Reward 🎁
 // ==========================

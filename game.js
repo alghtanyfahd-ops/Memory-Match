@@ -1,10 +1,3 @@
-window.onerror = function(message, source, line, column, error) {
-    alert(
-        "خطأ:\n" +
-        message +
-        "\nالسطر: " + line
-    );
-};
 // ==========================
 // Memory Match Game
 // ==========================
@@ -17,16 +10,9 @@ let moves = 0;
 
 let first = null;
 let lock = false;
-
 let deck = [];
 
-
-// المستويات
-
 const MAX_LEVEL = 70;
-
-
-// الرموز
 
 const SYMBOLS = [
 "🐶","🐱","🐭","🐰","🦊",
@@ -41,7 +27,7 @@ const SYMBOLS = [
 ];
 
 // ==========================
-// بداية المستوى
+// إنشاء مستوى جديد
 // ==========================
 
 function newLevel(){
@@ -52,7 +38,7 @@ function newLevel(){
 
     let pairs = 4 + Math.floor((level - 1) / 2);
 
-    if(pairs > Math.floor(SYMBOLS.length / 1)){
+    if(pairs > SYMBOLS.length){
         pairs = SYMBOLS.length;
     }
 
@@ -65,307 +51,197 @@ function newLevel(){
             open: false,
             done: false
         }));
-function render(){
 
-    alert("render");
     render();
+
 }
 
-
 window.newLevel = newLevel;
+
+
 // ==========================
 // رسم اللعبة
 // ==========================
 
 function render(){
 
-    const who =
-    document.getElementById("who");
+    const who = document.getElementById("who");
+    if(who) who.textContent = player;
 
-    if(who){
-        who.textContent = player;
-    }
+    const levelBox = document.getElementById("level");
+    if(levelBox) levelBox.textContent = level;
 
+    const scoreBox = document.getElementById("score");
+    if(scoreBox) scoreBox.textContent = score;
 
-    const levelBox =
-    document.getElementById("level");
+    const coinsBox = document.getElementById("coins");
+    if(coinsBox) coinsBox.textContent = coins;
 
-    if(levelBox){
-        levelBox.textContent = level;
-    }
+    const movesBox = document.getElementById("moves");
+    if(movesBox) movesBox.textContent = moves;
 
-
-    const scoreBox =
-    document.getElementById("score");
-
-    if(scoreBox){
-        scoreBox.textContent = score;
-    }
-
-
-    const movesBox =
-    document.getElementById("moves");
-
-    if(movesBox){
-        movesBox.textContent = moves;
-    }
-
-
-    const tilesBox =
-    document.getElementById("tiles");
-
-    if(tilesBox){
-        tilesBox.textContent = deck.length;
-    }
-
-
-
-    const grid =
-    document.getElementById("grid");
-
+    const grid = document.getElementById("grid");
 
     if(!grid) return;
 
-
     grid.innerHTML = "";
 
-
+    grid.style.gridTemplateColumns =
+        "repeat(" + Math.ceil(Math.sqrt(deck.length)) + ",1fr)";
 
     deck.forEach((card,index)=>{
 
+        const btn = document.createElement("button");
 
-        const btn =
-        document.createElement("button");
+        btn.className = "tile";
 
+        if(card.open || card.done){
 
-        btn.className =
-        "tile " +
-        ((card.open || card.done)
-        ? "open "
-        : "") +
-        (card.done ? "done" : "");
+            btn.classList.add("open");
+            btn.textContent = card.v;
 
+        }else{
 
+            btn.textContent = "?";
 
-       if(card.open || card.done){
-    btn.textContent = card.v;
-}else{
-    btn.textContent = "?";
-}
+        }
 
+        if(card.done){
+            btn.classList.add("done");
+        }
 
-
-        btn.onclick = function(){
-
-            flip(index);
-
-        };
-
-
+        btn.onclick = () => flip(index);
 
         grid.appendChild(btn);
 
-
     });
 
-
-}
-
-
-
-// ==========================
-// فتح البطاقة
+}// ==========================
+// قلب البطاقات
 // ==========================
 
 function flip(index){
 
+    const card = deck[index];
 
-    const card =
-    deck[index];
-
-
-    if(
-        lock ||
-        card.open ||
-        card.done
-    ){
-
+    if(lock || card.open || card.done){
         return;
-
     }
 
-
-
     card.open = true;
-
-
 
     if(first === null){
 
         first = index;
-
         render();
-
         return;
 
     }
 
-
-
     moves++;
 
-
-    const firstCard =
-    deck[first];
-
-
+    const firstCard = deck[first];
 
     if(firstCard.v === card.v){
 
-
         firstCard.done = true;
-
         card.done = true;
 
-
         score += 10;
-
         coins += 5;
-
-
 
         first = null;
 
+        if(deck.every(c => c.done)){
 
+            if(level < MAX_LEVEL){
 
-        if(
-            deck.every(
-                x => x.done
-            )
-        ){
+                level++;
 
-            level++;
+                setTimeout(() => {
 
+                    newLevel();
 
-            setTimeout(
-                newLevel,
-                700
-            );
+                },700);
+
+            }else{
+
+                alert("🎉 مبروك! أكملت جميع المستويات.");
+
+            }
 
         }
 
-
+        render();
 
     }else{
 
-
         lock = true;
 
+        render();
 
         setTimeout(()=>{
 
-
             firstCard.open = false;
-
             card.open = false;
 
-
             first = null;
-
             lock = false;
-
 
             render();
 
-
         },700);
-
 
     }
 
-
-
-    render();
-
 }
+
+
 // ==========================
-// فتح اللعبة
+// بدء اللعبة
 // ==========================
 
 window.startGame = function(username){
 
-    alert("startGame");
-
     player = username || "Player";
 
-    localStorage.mmPlayer =
-    player;
+    localStorage.mmPlayer = player;
 
+    loadProgress();
 
-    const name =
-    document.getElementById("name");
-
-
-    if(name){
-
-        name.value = player;
-
+    const input = document.getElementById("name");
+    if(input){
+        input.value = player;
     }
 
-
-    const login =
-    document.getElementById("login");
-
-
-    const game =
-    document.getElementById("game");
-
-
+    const login = document.getElementById("login");
     if(login){
-
         login.classList.add("hidden");
-
     }
 
-
+    const game = document.getElementById("game");
     if(game){
-
         game.classList.remove("hidden");
-
     }
 
-function newLevel(){
-
-    alert("newLevel");
-
-    moves = 0;
     newLevel();
 
-};
-
-
-
-// ==========================
+};// ==========================
 // حفظ التقدم
 // ==========================
 
 function saveProgress(){
 
-    localStorage.mmProgress =
-    JSON.stringify({
+    localStorage.mmProgress = JSON.stringify({
 
         player: player,
-
         level: level,
-
         score: score,
-
         coins: coins
 
     });
 
 }
-
 
 
 // ==========================
@@ -374,36 +250,23 @@ function saveProgress(){
 
 function loadProgress(){
 
-
-    const saved =
-    JSON.parse(
+    const saved = JSON.parse(
         localStorage.mmProgress || "null"
     );
 
-
     if(saved && saved.player === player){
 
-
-        level =
-        saved.level || 1;
-
-
-        score =
-        saved.score || 0;
-
-
-        coins =
-        saved.coins || 0;
-
+        level = saved.level || 1;
+        score = saved.score || 0;
+        coins = saved.coins || 0;
 
     }
 
 }
 
 
-
 // ==========================
-// إعادة اللعبة
+// إعادة المستوى
 // ==========================
 
 function resetGame(){
@@ -412,19 +275,18 @@ function resetGame(){
 
 }
 
-
-
 window.resetGame = resetGame;
 
 
-
 // ==========================
-// خروج
+// الخروج
 // ==========================
 
 function logout(){
 
     saveProgress();
+
+    localStorage.removeItem("mmPlayer");
 
     location.reload();
 
@@ -432,6 +294,9 @@ function logout(){
 
 window.logout = logout;
 
-console.log("game.js loaded successfully");
 
-alert("game.js تم تحميله");
+// ==========================
+// تم تحميل اللعبة
+// ==========================
+
+console.log("game.js loaded successfully");

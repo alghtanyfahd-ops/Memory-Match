@@ -91,9 +91,10 @@ function render(){
 
     deck.forEach((card,index)=>{
 
-        const btn = document.createElement("button");
+  const btn = document.createElement("button");
 
-        btn.className = "tile";
+btn.type = "button";
+btn.className = "tile";
 
         if(card.open || card.done){
 

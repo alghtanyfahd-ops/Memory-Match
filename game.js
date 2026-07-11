@@ -285,8 +285,9 @@ function flip(index){
 
 window.startGame = function(username){
 
-    player = username || "Player";
+    alert("startGame");
 
+    player = username || "Player";
 
     localStorage.mmPlayer =
     player;

@@ -321,7 +321,6 @@ let audioCtx;
 let musicOn = false;
 let musicTimer;
 let musicStep = 0;
-
 document.getElementById("musicBtn").onclick = function(){
 
     if(!musicOn){
@@ -331,27 +330,69 @@ document.getElementById("musicBtn").onclick = function(){
             window.webkitAudioContext
         )();
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
 
-        osc.frequency.value = 440;
-        osc.type = "sine";
+        if(audioCtx.state === "suspended"){
 
-        gain.gain.value = 0.05;
+            audioCtx.resume();
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        }
 
-        osc.start();
 
-        setTimeout(()=>{
+        function playTone(){
 
-            osc.stop();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
 
-        },500);
+
+            osc.type = "sine";
+
+            osc.frequency.value =
+            261.63;
+
+
+            gain.gain.setValueAtTime(
+                0.001,
+                audioCtx.currentTime
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.08,
+                audioCtx.currentTime + 0.05
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                audioCtx.currentTime + 0.8
+            );
+
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+
+            osc.start();
+
+            osc.stop(
+                audioCtx.currentTime + 0.9
+            );
+
+        }
+
+
+        playTone();
+
+
+        musicTimer = setInterval(()=>{
+
+            playTone();
+
+        },1000);
 
 
         musicOn = true;
+
 
         this.textContent =
         "إيقاف الموسيقى 🔇";
@@ -360,9 +401,13 @@ document.getElementById("musicBtn").onclick = function(){
     }else{
 
 
+        clearInterval(musicTimer);
+
+
         if(audioCtx){
 
             audioCtx.close();
+
             audioCtx = null;
 
         }
@@ -370,13 +415,14 @@ document.getElementById("musicBtn").onclick = function(){
 
         musicOn = false;
 
+
         this.textContent =
         "تشغيل موسيقى هادئة 🎵";
+
 
     }
 
 };
-
     if(!musicOn){
 
         audioCtx = new (

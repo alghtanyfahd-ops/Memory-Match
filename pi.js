@@ -27,13 +27,11 @@ async function loginWithPi() {
 
         openGame();
 
-    } catch (err) {
+catch (err) {
 
-        console.error(err);
+    console.error(err);
 
-        alert("تعذر تسجيل الدخول بحساب Pi");
-
-    }
+    alert(JSON.stringify(err));
 
 }
 

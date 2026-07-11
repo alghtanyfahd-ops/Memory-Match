@@ -372,14 +372,35 @@ window.onload = () => {
 
 <script src="game.js"></script>
 
+<script>
+
+function openGame(){
+
+    localStorage.mmPlayer = player;
+
+
+    document
+    .getElementById("login")
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById("game")
+    .classList
+    .remove("hidden");
+
+
+    if(typeof newLevel === "function"){
+
+        newLevel();
+
+    }
+
+}
+
+</script>
+
 
 </body>
-<script src="pi.js"></script>
-<script src="pi.js"></script>
-
-<script src="game.js"></script>
-
-
-</body>
-</html>
 </html>

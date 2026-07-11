@@ -296,6 +296,32 @@ window.logout = logout;
 
 
 // ==========================
+// زر ابدأ اللعبة
+// ==========================
+
+function start(){
+
+    const name =
+    document.getElementById("name").value.trim();
+
+
+    if(!name){
+
+        alert("اكتب اسم اللاعب أولاً");
+
+        return;
+
+    }
+
+
+    startGame(name);
+
+}
+
+window.start = start;
+
+
+// ==========================
 // تم تحميل اللعبة
 // ==========================
 

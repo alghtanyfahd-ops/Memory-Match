@@ -47,4 +47,8 @@ alert(
     "الرسالة: " + (err.message || "") +
     "\nالكود: " + (err.code || "") +
     "\nالبيانات: " + JSON.stringify(err)
-);
+); 
+}
+}
+
+window.loginWithPi = loginWithPi;

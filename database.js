@@ -96,3 +96,14 @@ async function savePlayerData(){
     }
 
 }
+<script>
+
+// ===== كل كود اللعبة =====
+
+</script>
+
+<script src="pi.js"></script>
+<script src="database.js"></script>
+
+</body>
+</html>

@@ -8,7 +8,6 @@ function openWheel(){
     .classList
     .remove("hidden");
 
-
     drawTest();
 
 }

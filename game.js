@@ -537,5 +537,6 @@ async function showLeaders(){
 
 
 window.showLeaders = showLeaders;
+
 console.log("game.js loaded successfully");
-console.log("game.js loaded successfully");
+console.log("grid:", document.getElementById("grid"));

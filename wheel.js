@@ -28,7 +28,7 @@ window.openWheel = function(){
 // رسم عجلة الحظ الاحترافية
 
 function drawWheel(){
-alert("drawWheel وصلت");
+
     const canvas =
     document.getElementById("wheelCanvas");
     

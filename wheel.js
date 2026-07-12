@@ -346,36 +346,24 @@ window.spinWheel=function(){
 
 function givePrize(){
 
-
-    const slice =
-    Math.PI * 2 / wheelPrizes.length;
-
-
+    const slice = Math.PI * 2 / wheelPrizes.length;
 
     let pointerAngle =
     (Math.PI * 1.5 - wheelAngle)
     % (Math.PI * 2);
 
 
-
     if(pointerAngle < 0){
-
         pointerAngle += Math.PI * 2;
-
     }
 
 
-
     let index =
-    Math.floor(
-        pointerAngle / slice
-    );
-
+    Math.floor(pointerAngle / slice);
 
 
     let prize =
     wheelPrizes[index];
-
 
 
     console.log(
@@ -384,12 +372,10 @@ function givePrize(){
     );
 
 
-
     let amount =
     parseInt(
         prize.replace(/\D/g,"")
     );
-
 
 
     if(amount && window.addCoins){
@@ -399,13 +385,12 @@ function givePrize(){
     }
 
 
-
     alert(
         "🎉 ربحت: " + prize
     );
 
-
 }
+
 // تشغيل زر إغلاق العجلة
 
 document.addEventListener("DOMContentLoaded", function(){

@@ -3,11 +3,15 @@ console.log("wheel.js loaded");
 
 window.openWheel = function(){
 
-    alert("openWheel يعمل ✅");
+    document
+    .getElementById("wheelModal")
+    .classList
+    .remove("hidden");
 
+
+    drawTest();
 
 };
-
 
 function closeWheel(){
 

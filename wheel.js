@@ -165,7 +165,7 @@ canvas.getContext("2d");
         );
 
 
-        ctx.restore();
+        
 
     }
 

@@ -161,8 +161,9 @@ celebrateWin();
 
                 setTimeout(() => {
 
-                    newLevel();
-
+                newLevel();
+dailyReward();
+                
                 },700);
 
             }else{

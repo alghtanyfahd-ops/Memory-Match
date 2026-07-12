@@ -1,16 +1,12 @@
 console.log("wheel.js loaded");
 
 
-function openWheel(){
+window.openWheel = function(){
 
-    document
-    .getElementById("wheelModal")
-    .classList
-    .remove("hidden");
+    alert("openWheel يعمل ✅");
 
-    drawTest();
 
-}
+};
 
 
 function closeWheel(){

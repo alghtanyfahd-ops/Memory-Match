@@ -53,11 +53,9 @@ function newLevel(){
         }));
 
     render();
-
 }
 
 window.newLevel = newLevel;
-
 
 // ==========================
 // رسم اللعبة
@@ -91,10 +89,10 @@ function render(){
 
     deck.forEach((card,index)=>{
 
-  const btn = document.createElement("button");
+        const btn = document.createElement("button");
 
-btn.type = "button";
-btn.className = "tile";
+        btn.type = "button";
+        btn.className = "tile";
 
         if(card.open || card.done){
 
@@ -117,7 +115,9 @@ btn.className = "tile";
 
     });
 
-}// ==========================
+}
+
+// ==========================
 // قلب البطاقات
 // ==========================
 
@@ -153,28 +153,33 @@ function flip(index){
 
         first = null;
 
+        render();
+
         if(deck.every(c => c.done)){
-celebrateWin();
+
+            if(typeof celebrateWin === "function"){
+                celebrateWin();
+            }
+
             if(level < MAX_LEVEL){
 
-                level++;saveScore();
+                level++;
 
-                setTimeout(() => {
+                saveScore();
 
-                newLevel();
-dailyReward();
-                
+                setTimeout(function(){
+
+                    newLevel();
+
                 },700);
 
             }else{
 
-                alert("🎉 مبروك! أكملت جميع المستويات.");
+                alert("🎉 مبروك! لقد أنهيت جميع المستويات.");
 
             }
 
         }
-
-        render();
 
     }else{
 
@@ -182,7 +187,7 @@ dailyReward();
 
         render();
 
-        setTimeout(()=>{
+        setTimeout(function(){
 
             firstCard.open = false;
             card.open = false;
@@ -190,85 +195,78 @@ dailyReward();
             first = null;
             lock = false;
 
-            showLeaders();
-           
             render();
+
+            showLeaders();
 
         },700);
 
     }
 
 }
-
 // ==========================
 // بدء اللعبة
 // ==========================
 
 window.startGame = function(username){
 
-    // إخفاء عجلة الحظ عند دخول اللعبة
-    const wheel =
-    document.getElementById("wheelModal");
-
-    if(wheel){
-
-        wheel.classList.add("hidden");
-
-    }
-
-
     player = username || "Player";
-
 
     localStorage.mmPlayer = player;
 
-
     loadProgress();
 
-
-
-    const input =
-    document.getElementById("name");
-
-
-    if(input){
-
-        input.value = player;
-
-    }
-
-
-
-    const login =
-    document.getElementById("login");
-
-
+    const login = document.getElementById("login");
     if(login){
-
         login.classList.add("hidden");
-
     }
 
-
-
-    const game =
-    document.getElementById("game");
-
-
+    const game = document.getElementById("game");
     if(game){
-
         game.classList.remove("hidden");
-
     }
 
-
+    // إخفاء عجلة الحظ عند بدء اللعبة
+    const wheel = document.getElementById("wheelModal");
+    if(wheel){
+        wheel.classList.add("hidden");
+    }
 
     newLevel();
 
+    dailyReward();
+
+    showLeaders();
 
 };
 
+// ==========================
+// زر ابدأ اللعبة
+// ==========================
 
+function start(){
+
+    const input = document.getElementById("name");
+
+    if(!input){
+        return;
+    }
+
+    const name = input.value.trim();
+
+    if(name === ""){
+
+        alert("اكتب اسم اللاعب أولاً");
+
+        return;
+
+    }
+
+    startGame(name);
+
+}
+
+window.start = start;
 
 // ==========================
 // حفظ التقدم
@@ -286,7 +284,6 @@ function saveProgress(){
     });
 
 }
-
 
 // ==========================
 // تحميل التقدم
@@ -308,7 +305,6 @@ function loadProgress(){
 
 }
 
-
 // ==========================
 // إعادة المستوى
 // ==========================
@@ -320,7 +316,6 @@ function resetGame(){
 }
 
 window.resetGame = resetGame;
-
 
 // ==========================
 // الخروج
@@ -338,92 +333,35 @@ function logout(){
 
 window.logout = logout;
 
-
 // ==========================
-// زر ابدأ اللعبة
-// ==========================
-
-function start(){
-
-    const name =
-    document.getElementById("name").value.trim();
-
-
-    if(!name){
-
-        alert("اكتب اسم اللاعب أولاً");
-
-        return;
-
-    }
-
-
-    startGame(name);
-
-}
-
-window.start = start;
-
-
-// ==========================
-// تم تحميل اللعبة
-// ==========================
-// ==========================
-// لوحة المتصدرين
-// ==========================
-
-
-// ==========================
-// Daily Reward 🎁
+// المكافأة اليومية
 // ==========================
 
 function dailyReward(){
 
-    const today =
-    new Date().toDateString();
+    const today = new Date().toDateString();
 
-
-    const lastReward =
-    localStorage.mmDailyReward;
-
+    const lastReward = localStorage.mmDailyReward;
 
     if(lastReward !== today){
 
-
         coins += 50;
 
+        localStorage.mmDailyReward = today;
 
-        localStorage.mmDailyReward =
-        today;
+        render();
 
+        setTimeout(function(){
 
-        localStorage.mmCoins =
-        coins;
+            alert("🎁 حصلت على 50 عملة كمكافأة يومية!");
 
-
-        setTimeout(()=>{
-
-            alert(
-                "🎁 مكافأة يومية!\n\nحصلت على 50 عملة"
-            );
-
-        },500);
-
+        },400);
 
     }
 
 }
-
-
-// تشغيل المكافأة عند بدء اللعبة
-
-// تشغيل المكافأة اليومية بعد الدخول
-
-
-
-
 // ==========================
-// Save Score Online
+// حفظ النقاط على السيرفر
 // ==========================
 
 async function saveScore(){
@@ -448,73 +386,116 @@ async function saveScore(){
 
         });
 
-
         showLeaders();
-
 
     }catch(error){
 
-        console.log(
-            "Leaderboard error",
-            error
-        );
+        console.log("Leaderboard Error:", error);
 
     }
 
 }
 
-
 // ==========================
-// Show Leaderboard
+// لوحة المتصدرين
 // ==========================
 
 async function showLeaders(){
 
-    const board =
-    document.getElementById("board");
+    const board = document.getElementById("board");
 
-
-    if(!board) return;
-
+    if(!board){
+        return;
+    }
 
     try{
 
-        const res =
-        await fetch("/api/leaderboard");
+        const res = await fetch("/api/leaderboard");
 
+        const data = await res.json();
 
-        const data =
-        await res.json();
+        if(!data.ok){
 
+            board.innerHTML =
+            "<li>لا توجد بيانات</li>";
 
-        if(!data.ok) return;
+            return;
+        }
 
+        board.innerHTML = "";
 
-        board.innerHTML =
-        data.players.map((p,i)=>{
+        data.players.forEach(function(playerData,index){
 
-            return `
-            <li>
-            🏆 ${i+1}
-            - ${p.name}
-            : ${p.score}
-            نقطة
-            </li>
-            `;
+            const li = document.createElement("li");
 
-        }).join("");
+            li.textContent =
+            "🏆 " +
+            (index+1) +
+            " - " +
+            playerData.name +
+            " : " +
+            playerData.score +
+            " نقطة";
 
+            board.appendChild(li);
 
-    }catch(e){
+        });
 
-        console.log(e);
+    }catch(error){
+
+        console.log(error);
 
     }
 
 }
 
-
 window.showLeaders = showLeaders;
 
+// ==========================
+// إضافة عملات (لعجلة الحظ)
+// ==========================
+
+window.addCoins = function(amount){
+
+    coins += amount;
+
+    render();
+
+    saveProgress();
+
+};
+
+// ==========================
+// عند تحميل الصفحة
+// ==========================
+
+window.onload = function(){
+
+    const wheel =
+    document.getElementById("wheelModal");
+
+    if(wheel){
+
+        wheel.classList.add("hidden");
+
+    }
+
+    if(localStorage.mmPlayer){
+
+        const input =
+        document.getElementById("name");
+
+        if(input){
+
+            input.value =
+            localStorage.mmPlayer;
+
+        }
+
+    }
+
+    showLeaders();
+
+};
+
 console.log("game.js loaded successfully");
-console.log("grid:", document.getElementById("grid"));

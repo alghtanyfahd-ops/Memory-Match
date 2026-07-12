@@ -413,3 +413,25 @@ showWinMessage(winMessage);
 
 }
 
+function showWinMessage(text){
+
+    const box =
+    document.getElementById("winMessage");
+
+    const msg =
+    document.getElementById("winText");
+
+
+    if(box && msg){
+
+        msg.textContent = text;
+
+        box.classList.remove("hidden");
+
+    }else{
+
+        console.log("نافذة الفوز غير موجودة");
+
+    }
+
+}

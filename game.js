@@ -443,7 +443,7 @@ window.startGame = function(username){
 
 };
 
-};
+
 // ==========================
 // Save Score Online
 // ==========================

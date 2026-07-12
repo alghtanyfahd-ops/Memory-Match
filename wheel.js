@@ -280,7 +280,7 @@ window.spinWheel = function(){
             spinning = false;
 
 
-            alert("🎁 مبروك! حصلت على جائزتك");
+            
 
 
         }

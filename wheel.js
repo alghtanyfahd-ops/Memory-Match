@@ -1,4 +1,4 @@
-let wheelAngle = 0;
+
 let spinning = false;
 
 window.openWheel = function(){

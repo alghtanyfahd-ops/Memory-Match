@@ -418,30 +418,7 @@ function dailyReward(){
 
 // تشغيل المكافأة اليومية بعد الدخول
 
-const oldStartGame = window.startGame;
 
-
-window.startGame = function(username){
-
-    oldStartGame(username);
-
-
-    dailyReward();
-
-
-    // تأكيد إخفاء العجلة
-
-    const wheel =
-    document.getElementById("wheelModal");
-
-
-    if(wheel){
-
-        wheel.classList.add("hidden");
-
-    }
-
-};
 
 
 // ==========================

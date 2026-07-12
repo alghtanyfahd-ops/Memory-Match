@@ -176,13 +176,13 @@ function drawWheel(){
 
     ctx.beginPath();
 
-    ctx.arc(
-        cx,
-        cy,
-        45,
-        0,
-        Math.PI * 2
-    );
+ctx.arc(
+    cx,
+    cy,
+    radius,
+    start + wheelAngle,
+    end + wheelAngle
+);
 
 
     ctx.fillStyle =

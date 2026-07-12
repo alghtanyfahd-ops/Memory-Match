@@ -1,8 +1,21 @@
-console.log("wheel.js loaded");
-
-
 window.openWheel = function(){
 
-    alert("وصلنا إلى openWheel ✅");
+    const modal =
+    document.getElementById("wheelModal");
+
+
+    if(!modal){
+
+        alert("لم أجد wheelModal ❌");
+
+        return;
+
+    }
+
+
+    modal.classList.remove("hidden");
+
+
+    drawTest();
 
 };

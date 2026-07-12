@@ -229,3 +229,28 @@ window.closeWheel = function(){
     }
 
 };
+let spinning = false;
+
+
+window.spinWheel = function(){
+
+    if(spinning){
+        return;
+    }
+
+
+    spinning = true;
+
+
+    alert("🎡 العجلة تدور...");
+
+
+    setTimeout(()=>{
+
+        spinning = false;
+
+        alert("🎁 مبروك! حصلت على جائزتك");
+
+    },4000);
+
+};

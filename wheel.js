@@ -42,12 +42,18 @@ function drawWheel(){
     }
 
 
-    const ctx =
-    canvas.getContext("2d");
+const cx =
+canvas.width / 2;
 
 
-    const cx =
-    canvas.width / 2;
+const cy =
+canvas.height / 2;
+
+
+const radius = 150;
+
+
+
 ctx.save();
 
 ctx.translate(
@@ -55,28 +61,11 @@ ctx.translate(
     cy
 );
 
-ctx.rotate(
-    wheelAngle
-);
-
-ctx.translate(
-    -cx,
-    -cy
-);
-    const cy =
-    canvas.height / 2;
-
-    const radius = 150;
-ctx.save();
-
-ctx.translate(
-    cx,
-    cy
-);
 
 ctx.rotate(
     wheelAngle
 );
+
 
 ctx.translate(
     -cx,

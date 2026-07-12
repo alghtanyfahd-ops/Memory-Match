@@ -48,7 +48,21 @@ function drawWheel(){
 
     const cx =
     canvas.width / 2;
+ctx.save();
 
+ctx.translate(
+    cx,
+    cy
+);
+
+ctx.rotate(
+    wheelAngle
+);
+
+ctx.translate(
+    -cx,
+    -cy
+);
     const cy =
     canvas.height / 2;
 

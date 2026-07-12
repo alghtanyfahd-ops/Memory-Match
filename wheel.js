@@ -409,7 +409,7 @@ else{
 }
 
 
-alert(winMessage);
+showWinMessage(winMessage);
 
 }
 

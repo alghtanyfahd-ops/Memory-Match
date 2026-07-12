@@ -74,6 +74,8 @@ window.closeWheel = function(){
 
         modal.classList.add("hidden");
 
+        console.log("تم إغلاق العجلة");
+
     }
 
 };

@@ -332,6 +332,8 @@ window.spinWheel=function(){
             spinning=false;
 
 
+            localStorage.mmLastSpin =
+Date.now();
             givePrize();
 
         }

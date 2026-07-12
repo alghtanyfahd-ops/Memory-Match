@@ -70,6 +70,7 @@ window.closeWheel = function(){
 
 
 
+
 // رسم العجلة
 
 function drawWheel(){
@@ -129,10 +130,7 @@ function drawWheel(){
         ctx.beginPath();
 
 
-        ctx.moveTo(
-            0,
-            0
-        );
+        ctx.moveTo(0,0);
 
 
         ctx.arc(
@@ -165,20 +163,14 @@ function drawWheel(){
         ctx.save();
 
 
-        ctx.rotate(
-            start + slice/2
-        );
+        ctx.rotate(start + slice/2);
 
 
         ctx.fillStyle="#fff";
 
+        ctx.font="bold 18px Arial";
 
-        ctx.font =
-        "bold 18px Arial";
-
-
-        ctx.textAlign =
-        "center";
+        ctx.textAlign="center";
 
 
         ctx.fillText(
@@ -194,10 +186,9 @@ function drawWheel(){
 
 
 
-    // دائرة الوسط
+    // وسط العجلة
 
     ctx.beginPath();
-
 
     ctx.arc(
         0,
@@ -210,16 +201,12 @@ function drawWheel(){
 
     ctx.fillStyle="#222";
 
-
     ctx.fill();
-
 
 
     ctx.fillStyle="#fff";
 
-
-    ctx.font =
-    "bold 22px Arial";
+    ctx.font="bold 22px Arial";
 
 
     ctx.fillText(
@@ -254,30 +241,24 @@ window.spinWheel=function(){
     return;
 
 
-
     spinning=true;
-
 
 
     let start =
     performance.now();
 
 
-
     let startAngle =
     wheelAngle;
 
 
-
     let rotations =
     (Math.floor(Math.random()*5)+5)
-    * Math.PI*2;
-
+    * Math.PI * 2;
 
 
     let finalAngle =
     startAngle + rotations;
-
 
 
     let duration =
@@ -296,13 +277,11 @@ window.spinWheel=function(){
         if(progress < 1){
 
 
-
             let ease =
             1-Math.pow(
                 1-progress,
                 3
             );
-
 
 
             wheelAngle =
@@ -311,9 +290,7 @@ window.spinWheel=function(){
             * ease;
 
 
-
             drawWheel();
-
 
 
             requestAnimationFrame(
@@ -328,22 +305,17 @@ window.spinWheel=function(){
             finalAngle % (Math.PI*2);
 
 
-
             drawWheel();
-
 
 
             spinning=false;
 
 
-
             givePrize();
-
 
         }
 
     }
-
 
 
     requestAnimationFrame(
@@ -357,30 +329,40 @@ window.spinWheel=function(){
 
 
 
-// تحديد الجائزة
+// حساب الجائزة
 
 function givePrize(){
 
-    const slice = Math.PI * 2 / wheelPrizes.length;
+
+    const slice =
+    Math.PI * 2 / wheelPrizes.length;
 
 
-    // تحويل زاوية الدوران إلى مكان السهم العلوي
+
     let pointerAngle =
     (Math.PI * 1.5 - wheelAngle)
     % (Math.PI * 2);
 
 
+
     if(pointerAngle < 0){
+
         pointerAngle += Math.PI * 2;
+
     }
 
 
+
     let index =
-    Math.floor(pointerAngle / slice);
+    Math.floor(
+        pointerAngle / slice
+    );
+
 
 
     let prize =
     wheelPrizes[index];
+
 
 
     console.log(
@@ -389,10 +371,12 @@ function givePrize(){
     );
 
 
+
     let amount =
     parseInt(
         prize.replace(/\D/g,"")
     );
+
 
 
     if(amount && window.addCoins){
@@ -402,16 +386,10 @@ function givePrize(){
     }
 
 
+
     alert(
         "🎉 ربحت: " + prize
     );
 
-}
-
-
-
-    alert(
-        "🎉 ربحت: "+prize
-    );
 
 }

@@ -404,3 +404,40 @@ function givePrize(){
 
 
 }
+// تشغيل زر إغلاق العجلة
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const closeBtn =
+    document.getElementById("closeWheelBtn");
+
+
+    const modal =
+    document.getElementById("wheelModal");
+
+
+    if(closeBtn && modal){
+
+
+        closeBtn.onclick = function(){
+
+
+            modal.classList.add("hidden");
+
+
+        };
+
+
+    }
+
+
+    // إخفاء العجلة عند بداية الصفحة
+
+    if(modal){
+
+        modal.classList.add("hidden");
+
+    }
+
+
+});

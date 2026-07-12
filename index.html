@@ -9,7 +9,6 @@
 
 <title>Memory Match - Pi Game</title>
 
-<!-- Pi SDK -->
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 <style>
@@ -19,25 +18,12 @@
 }
 
 
-/* ==========================
-   Pi Browser Mobile Design
-========================== */
-
-
-*{
-    box-sizing:border-box;
-}
-
-
 body{
 
     margin:0;
-
     padding:15px;
 
-    font-family:
-    Arial,
-    sans-serif;
+    font-family:Arial,sans-serif;
 
     background:
     linear-gradient(
@@ -50,169 +36,6 @@ body{
 
     text-align:center;
 
-    min-height:100vh;
-
-}
-
-
-/* عنوان اللعبة */
-
-h1{
-
-    font-size:28px;
-
-    margin:10px;
-
-}
-
-
-/* صندوق المعلومات */
-
-#info,
-.stats{
-
-    display:flex;
-
-    justify-content:center;
-
-    flex-wrap:wrap;
-
-    gap:8px;
-
-    margin:10px auto;
-
-}
-
-
-#info div,
-.stats div{
-
-    background:
-    rgba(255,255,255,.15);
-
-    padding:8px 12px;
-
-    border-radius:15px;
-
-    font-size:15px;
-
-}
-
-
-/* شبكة البطاقات */
-
-#grid{
-
-    width:100%;
-
-    max-width:500px;
-
-    margin:auto;
-
-    display:grid;
-
-    gap:8px;
-
-    position:relative;
-
-}
-
-
-/* البطاقات */
-
-.tile{
-
-    aspect-ratio:1/1;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:
-    linear-gradient(
-        145deg,
-        #667eea,
-        #764ba2
-    );
-
-    color:white;
-
-    font-size:28px;
-
-    box-shadow:
-    0 5px 15px #0005;
-
-    transition:.25s;
-
-}
-
-
-.tile:active{
-
-    transform:scale(.9);
-
-}
-
-
-.tile.open{
-
-    background:white;
-
-    color:#333;
-
-}
-
-
-.tile.done{
-
-    background:#00c853;
-
-}
-
-
-/* الأزرار */
-
-button{
-
-    border:none;
-
-    border-radius:20px;
-
-    padding:12px 20px;
-
-    margin:5px;
-
-    font-size:16px;
-
-    cursor:pointer;
-
-    background:#ffca28;
-
-}
-
-
-/* الهاتف الصغير */
-
-@media(max-width:380px){
-
-    .tile{
-
-        font-size:22px;
-
-    }
-
-
-    button{
-
-        width:90%;
-
-    }
-
-}
-    margin:0;
-    font-family:system-ui,sans-serif;
-    background:#101827;
-    color:white;
     min-height:100vh;
 
 }
@@ -233,14 +56,6 @@ button{
     border:1px solid #334155;
     border-radius:18px;
     padding:22px;
-    box-shadow:0 10px 30px #0004;
-
-}
-
-
-h1,h2{
-
-    color:#fbbf24;
 
 }
 
@@ -248,6 +63,13 @@ h1,h2{
 .hidden{
 
     display:none;
+
+}
+
+
+h1,h2{
+
+    color:#fbbf24;
 
 }
 
@@ -278,14 +100,7 @@ button{
     color:#111;
     font-weight:800;
     cursor:pointer;
-    margin:6px 0;
-
-}
-
-
-button:disabled{
-
-    opacity:.6;
+    margin:6px;
 
 }
 
@@ -305,8 +120,6 @@ button:disabled{
 
     align-items:center;
     justify-content:space-between;
-    margin:15px 0;
-
 }
 
 
@@ -362,11 +175,14 @@ button:disabled{
     border-bottom:1px solid #334155;
 
 }
+
+
 .welcome{
 
     text-align:center;
 
 }
+
 
 .logo{
 
@@ -374,110 +190,82 @@ button:disabled{
 
     margin-bottom:15px;
 
-    animation:floatLogo 2s infinite ease-in-out;
-
 }
 
-@keyframes floatLogo{
 
-    0%,100%{
-        transform:translateY(0);
-    }
-
-    50%{
-        transform:translateY(-10px);
-    }
-
-}
-
-.welcome h1{
-
-    color:#FFD54F;
-
-    font-size:34px; 
-}
 .wheel-modal{
 
-position:fixed;
+    position:fixed;
 
-left:0;
+    left:0;
+    top:0;
 
-top:0;
+    width:100%;
+    height:100%;
 
-width:100%;
+    background:rgba(0,0,0,.7);
 
-height:100%;
+    display:flex;
 
-background:rgba(0,0,0,.7);
+    justify-content:center;
 
-display:flex;
+    align-items:center;
 
-justify-content:center;
-
-align-items:center;
-
-z-index:9999;
+    z-index:9999;
 
 }
+
 
 .wheel-box{
 
-background:white;
+    background:white;
 
-padding:20px;
+    padding:20px;
 
-border-radius:20px;
+    border-radius:20px;
 
-text-align:center;
+    width:360px;
 
-width:360px;
-
-max-width:95%;
+    max-width:95%;
 
 }
+
 
 .pointer{
 
-font-size:30px;
+    font-size:30px;
 
-color:red;
-
-margin-bottom:-10px;
+    color:red;
 
 }
+
 
 .wheel-close{
 
-float:right;
+    float:right;
 
-background:red;
+    background:red;
 
-color:white;
+    color:white;
 
-border:none;
+    border-radius:50%;
 
-border-radius:50%;
+    width:35px;
 
-width:35px;
-
-height:35px;
+    height:35px;
 
 }
 
 
-
-display:none;
-
-}
 </style>
-
-</head>
-
 
 <body>
 
 
-<main class="app"><section id="login" class="card welcome">
+<main class="app">
+
+
+<section id="login" class="card welcome">
 
 <div class="logo">
 🧠🎴
@@ -515,6 +303,8 @@ placeholder="اكتب اسم اللاعب"
 
 
 
+
+
 <section id="game" class="hidden">
 
 
@@ -531,12 +321,10 @@ Memory Match
 <button id="musicBtn">
 تشغيل موسيقى هادئة 🎵
 </button>
-<button 
-style="position:relative; z-index:9999;"
-onclick="openWheel()">
 
+
+<button onclick="openWheel()">
 🎡 عجلة الحظ
-
 </button>
 
 
@@ -548,6 +336,8 @@ onclick="openWheel()">
 </div>
 
 </div>
+
+
 
 
 
@@ -589,7 +379,10 @@ onclick="openWheel()">
 
 
 
+
 <div id="grid" class="grid"></div>
+
+
 
 
 
@@ -607,45 +400,59 @@ onclick="openWheel()">
 
 
 
-<!-- نافذة عجلة الحظ -->
+
+
+<!-- عجلة الحظ داخل اللعبة -->
+
 <div id="wheelModal" class="wheel-modal hidden">
 
-    <div class="wheel-box">
 
-        <button class="wheel-close"
-        onclick="closeWheel()">
-        ✖
-        </button>
+<div class="wheel-box">
 
 
-        <h2>
-        🎡 عجلة الحظ اليومية
-        </h2>
+<button class="wheel-close"
+onclick="closeWheel()">
+✖
+</button>
 
 
-        <div class="pointer">
-        ▲
-        </div>
+
+<h2>
+🎡 عجلة الحظ اليومية
+</h2>
 
 
-        <canvas
-        id="wheelCanvas"
-        width="320"
-        height="320">
-        </canvas>
+
+<div class="pointer">
+▲
+</div>
 
 
-        <br>
+
+<canvas
+id="wheelCanvas"
+width="320"
+height="320">
+</canvas>
 
 
-        <button onclick="spinWheel()">
-        تدوير
-        </button>
+
+<br>
 
 
-    </div>
+
+<button onclick="spinWheel()">
+🎯 تدوير
+</button>
+
+
 
 </div>
+
+
+</div>
+
+
 
 
 </section>
@@ -653,81 +460,103 @@ onclick="openWheel()">
 
 </main>
 
-    
+
+
+
+
+<script>
+
 
 let music = new Audio(
-    "melo-rock-13-by-ende-dot-app.mp3"
+"melo-rock-13-by-ende-dot-app.mp3"
 );
 
+
 music.loop = true;
+
 music.volume = 0.25;
+
 
 let musicOn = false;
 
 
+
 document
 .getElementById("musicBtn")
-.onclick = function(){
+.onclick=function(){
 
 
-    if(!musicOn){
+if(!musicOn){
 
 
-        music.play()
-        .then(()=>{
-
-            musicOn = true;
-
-            this.textContent =
-            "إيقاف الموسيقى 🔇";
-
-        })
-        .catch(error=>{
-
-            console.log(
-                "Music error:",
-                error
-            );
-
-        });
+music.play()
+.then(()=>{
 
 
-    }else{
+musicOn=true;
 
 
-        music.pause();
-
-        music.currentTime = 0;
-
-
-        musicOn = false;
+this.textContent=
+"إيقاف الموسيقى 🔇";
 
 
-        this.textContent =
-        "تشغيل موسيقى هادئة 🎵";
+});
 
 
-    }
+}else{
+
+
+music.pause();
+
+music.currentTime=0;
+
+
+musicOn=false;
+
+
+this.textContent=
+"تشغيل موسيقى هادئة 🎵";
+
+
+}
+
 
 };
-window.onload = () => {
 
-    if(localStorage.mmPlayer){
 
-        document.getElementById("name").value =
-        localStorage.mmPlayer;
 
-    }
+
+
+window.onload=()=>{
+
+
+if(localStorage.mmPlayer){
+
+
+document.getElementById("name").value=
+localStorage.mmPlayer;
+
+
+}
+
 
 };
+
 
 </script>
+
+
+
 
 <script src="game.js"></script>
 
 <script src="pi.js"></script>
 
-<script src="confetti.js"></script>    
+<script src="confetti.js"></script>
+
 <script src="wheel.js"></script>
+
+
 </body>
+
 </html>

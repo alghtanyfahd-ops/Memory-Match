@@ -296,3 +296,10 @@ function drawTest(){
     ctx.fill();
 
 }
+console.log("آخر wheel.js تم تحميله");
+
+window.openWheel = function(){
+
+    alert("openWheel يعمل ✅");
+
+};

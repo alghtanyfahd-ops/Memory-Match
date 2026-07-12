@@ -199,37 +199,77 @@ celebrateWin();
 
 }
 
-
 // ==========================
 // بدء اللعبة
 // ==========================
 
 window.startGame = function(username){
 
+    // إخفاء عجلة الحظ عند دخول اللعبة
+    const wheel =
+    document.getElementById("wheelModal");
+
+    if(wheel){
+
+        wheel.classList.add("hidden");
+
+    }
+
+
     player = username || "Player";
+
 
     localStorage.mmPlayer = player;
 
+
     loadProgress();
 
-    const input = document.getElementById("name");
+
+
+    const input =
+    document.getElementById("name");
+
+
     if(input){
+
         input.value = player;
+
     }
 
-    const login = document.getElementById("login");
+
+
+    const login =
+    document.getElementById("login");
+
+
     if(login){
+
         login.classList.add("hidden");
+
     }
 
-    const game = document.getElementById("game");
+
+
+    const game =
+    document.getElementById("game");
+
+
     if(game){
+
         game.classList.remove("hidden");
+
     }
+
+
 
     newLevel();
 
-};// ==========================
+
+};
+
+
+
+// ==========================
 // حفظ التقدم
 // ==========================
 

@@ -1,3 +1,4 @@
+console.log("wheel.js loaded");
 // ==========================
 // Memory Match Wheel
 // Version 2.0

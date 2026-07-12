@@ -214,3 +214,18 @@ function drawWheel(){
     );
 
 }
+// إغلاق نافذة العجلة
+
+window.closeWheel = function(){
+
+    const modal =
+    document.getElementById("wheelModal");
+
+
+    if(modal){
+
+        modal.classList.add("hidden");
+
+    }
+
+};

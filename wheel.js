@@ -397,34 +397,40 @@ function givePrize(){
 
 let winMessage = "";
 
+
 if(prize.includes("10")){
 
-    winMessage = "🎉 ربحت 10 كوين";
+    winMessage="🎉 ربحت 10 كوين";
 
 }
 else if(prize.includes("20")){
 
-    winMessage = "🎉 ربحت 20 كوين";
+    winMessage="🎉 ربحت 20 كوين";
 
 }
-else if(prize.includes("50")){
+else if(prize.includes("30")){
 
-    winMessage = "🎉 ربحت 40 كوين";
-
-}
-else if(prize.includes("100")){
-
-    winMessage = "🎁 هدية رائعة";
+    winMessage="🎉 ربحت 30 كوين";
 
 }
-else if(prize.includes("500")){
+else if(prize.includes("40")){
 
-    winMessage = "❤️ ربحت يا قلب";
+    winMessage="🎉 ربحت 40 كوين";
+
+}
+else if(prize.includes("هدية")){
+
+    winMessage="🎁 ربحت هدية";
+
+}
+else if(prize.includes("قلب")){
+
+    winMessage="❤️ ربحت يا قلب";
 
 }
 else{
 
-    winMessage = "🎁 هدية";
+    winMessage="⭐ هدية مميزة";
 
 }
 

@@ -229,7 +229,6 @@ window.closeWheel = function(){
     }
 
 };
-let spinning = false;
 
 window.spinWheel = function(){
 

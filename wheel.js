@@ -28,11 +28,10 @@ window.openWheel = function(){
 // رسم عجلة الحظ الاحترافية
 
 function drawWheel(){
-
+alert("drawWheel وصلت");
     const canvas =
     document.getElementById("wheelCanvas");
-
-
+    
     if(!canvas){
 
         alert("لم أجد wheelCanvas ❌");
@@ -75,7 +74,8 @@ const radius = 150;
         "#e91e63"
     ];
 
-
+    const ctx =
+canvas.getContext("2d");
     ctx.clearRect(
         0,
         0,

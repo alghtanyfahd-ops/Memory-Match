@@ -1,3 +1,4 @@
+let wheelAngle = 0;
 window.openWheel = function(){
 
     const modal =

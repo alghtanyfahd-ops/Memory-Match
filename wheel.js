@@ -361,56 +361,52 @@ window.spinWheel=function(){
 
 function givePrize(){
 
-
-    const slice =
-    Math.PI*2 / wheelPrizes.length;
+    const slice = Math.PI * 2 / wheelPrizes.length;
 
 
+    // تحويل زاوية الدوران إلى مكان السهم العلوي
+    let pointerAngle =
+    (Math.PI * 1.5 - wheelAngle)
+    % (Math.PI * 2);
 
-    let normalized =
-    (Math.PI*2-wheelAngle)
-    %
-    (Math.PI*2);
 
+    if(pointerAngle < 0){
+        pointerAngle += Math.PI * 2;
+    }
 
 
     let index =
-    Math.floor(
-        normalized / slice
-    );
-
+    Math.floor(pointerAngle / slice);
 
 
     let prize =
     wheelPrizes[index];
 
 
-
     console.log(
-        "Prize:",
+        "الفائز:",
         prize
     );
 
 
-
-    // هنا تربطها مع عملات اللعبة
-
-    if(window.addCoins){
-
-
-        let amount =
-        parseInt(
-            prize.replace(/\D/g,"")
-        );
+    let amount =
+    parseInt(
+        prize.replace(/\D/g,"")
+    );
 
 
-        if(amount){
+    if(amount && window.addCoins){
 
-            addCoins(amount);
-
-        }
+        addCoins(amount);
 
     }
+
+
+    alert(
+        "🎉 ربحت: " + prize
+    );
+
+}
 
 
 

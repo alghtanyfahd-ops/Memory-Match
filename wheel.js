@@ -178,9 +178,9 @@ const radius = 150;
 ctx.arc(
     cx,
     cy,
-    radius,
-    start + wheelAngle,
-    end + wheelAngle
+    45,
+    0,
+    Math.PI * 2
 );
 
 

@@ -238,6 +238,25 @@ function drawWheel(){
 
 window.spinWheel=function(){
 
+    const lastSpin =
+    localStorage.mmLastSpin;
+
+
+    if(lastSpin){
+
+        const passed =
+        Date.now() - Number(lastSpin);
+
+
+        if(passed < 86400000){
+
+            showWinMessage("⏳ عد غداً لتدوير العجلة");
+
+            return;
+
+        }
+
+    }
 
     if(spinning)
     return;

@@ -172,3 +172,24 @@ radius+6
 
 
 drawWheel();
+// ==========================
+// فتح وإغلاق عجلة الحظ
+// ==========================
+
+function openWheel(){
+
+    document
+    .getElementById("wheelModal")
+    .classList
+    .remove("hidden");
+
+}
+
+function closeWheel(){
+
+    document
+    .getElementById("wheelModal")
+    .classList
+    .add("hidden");
+
+}

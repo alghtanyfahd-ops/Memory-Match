@@ -232,7 +232,6 @@ window.closeWheel = function(){
 };
 let spinning = false;
 
-
 window.spinWheel = function(){
 
     if(spinning){
@@ -243,15 +242,54 @@ window.spinWheel = function(){
     spinning = true;
 
 
-    alert("🎡 العجلة تدور...");
+    let start =
+    performance.now();
 
 
-    setTimeout(()=>{
+    let duration = 4000;
 
-        spinning = false;
 
-        alert("🎁 مبروك! حصلت على جائزتك");
+    let turns =
+    (Math.floor(Math.random() * 5) + 5) * Math.PI * 2;
 
-    },4000);
+
+    function animate(time){
+
+        let progress =
+        (time - start) / duration;
+
+
+        if(progress < 1){
+
+
+            let ease =
+            1 - Math.pow(1 - progress, 3);
+
+
+            wheelAngle =
+            turns * ease;
+
+
+            drawWheel();
+
+
+            requestAnimationFrame(animate);
+
+
+        }else{
+
+
+            spinning = false;
+
+
+            alert("🎁 مبروك! حصلت على جائزتك");
+
+
+        }
+
+    }
+
+
+    requestAnimationFrame(animate);
 
 };

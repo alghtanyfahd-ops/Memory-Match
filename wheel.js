@@ -251,3 +251,48 @@ function drawTest(){
     );
 
 }
+function openWheel(){
+
+    document
+    .getElementById("wheelModal")
+    .classList
+    .remove("hidden");
+
+    drawTest();
+
+}
+
+
+function closeWheel(){
+
+    document
+    .getElementById("wheelModal")
+    .classList
+    .add("hidden");
+
+}
+
+
+function drawTest(){
+
+    const canvas =
+    document.getElementById("wheelCanvas");
+
+    const ctx =
+    canvas.getContext("2d");
+
+    ctx.fillStyle = "red";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        160,
+        160,
+        120,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}

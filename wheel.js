@@ -10,8 +10,16 @@ function openWheel(){
     drawTest();
 
 }
-
 function closeWheel(){
+
+    document
+    .getElementById("wheelModal")
+    .classList
+    .add("hidden");
+
+}
+
+
 function drawTest(){
 
     const canvas =
@@ -47,12 +55,6 @@ function drawTest(){
         160,
         170
     );
-
-}
-    document
-    .getElementById("wheelModal")
-    .classList
-    .add("hidden");
 
 }
 

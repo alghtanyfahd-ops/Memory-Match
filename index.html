@@ -606,39 +606,52 @@ onclick="openWheel()">
 </section>
 
 
-</section><div id="wheelModal" class="wheel-modal hidden">
 
-<div class="wheel-box">
+<!-- نافذة عجلة الحظ -->
+<div id="wheelModal" class="wheel-modal hidden">
 
-<button class="wheel-close"
-onclick="closeWheel()">
-✖
-</button>
+    <div class="wheel-box">
 
-<h2>🎡 عجلة الحظ اليومية</h2>
+        <button class="wheel-close"
+        onclick="closeWheel()">
+        ✖
+        </button>
 
-<div class="pointer">
-▲
+
+        <h2>
+        🎡 عجلة الحظ اليومية
+        </h2>
+
+
+        <div class="pointer">
+        ▲
+        </div>
+
+
+        <canvas
+        id="wheelCanvas"
+        width="320"
+        height="320">
+        </canvas>
+
+
+        <br>
+
+
+        <button onclick="spinWheel()">
+        تدوير
+        </button>
+
+
+    </div>
+
 </div>
 
-<canvas
-id="wheelCanvas"
-width="320"
-height="320">
-</canvas>
 
-<br>
-
-<button onclick="spinWheel()">
-تدوير
-</button>
-
-</div>
-
-</div> </main>
+</section>
 
 
-<script>
+</main>
 
     
 

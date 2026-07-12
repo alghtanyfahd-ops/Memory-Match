@@ -1,3 +1,14 @@
+window.onload = function(){
+
+    const modal = document.getElementById("wheelModal");
+
+    if(modal){
+
+        modal.classList.add("hidden");
+
+    }
+
+};
 let spinning = false;
 let wheelAngle = 0;
 

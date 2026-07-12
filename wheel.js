@@ -461,3 +461,17 @@ function showWinMessage(text){
     }
 
 }
+function closeWinMessage(){
+
+    const box =
+    document.getElementById("winMessage");
+
+    if(box){
+
+        box.classList.add("hidden");
+
+    }
+
+}
+
+window.closeWinMessage = closeWinMessage;

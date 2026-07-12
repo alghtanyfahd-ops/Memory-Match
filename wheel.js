@@ -52,26 +52,6 @@ canvas.height / 2;
 
 const radius = 150;
 
-
-
-ctx.save();
-
-ctx.translate(
-    cx,
-    cy
-);
-
-
-ctx.rotate(
-    wheelAngle
-);
-
-
-ctx.translate(
-    -cx,
-    -cy
-);
-
     const prizes = [
         "🪙20",
         "🪙50",

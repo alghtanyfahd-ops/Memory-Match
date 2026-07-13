@@ -1,152 +1,42 @@
-// ==========================
-// Pi Login System
-// ==========================
-
 let piUser = null;
-let accessToken = null;
 
+async function initPi() {
+    try {
 
-// ==========================
-// تشغيل Pi SDK
-// ==========================
+        await Pi.init({
+            version: "2.0",
+            sandbox: true
+        });
 
-if (typeof Pi === "undefined") {
+        console.log("Pi SDK Ready");
 
-    console.error("Pi SDK not loaded");
+    } catch (e) {
 
-} else {
+        console.error(e);
 
-    Pi.init({
-
-        version: "2.0",
-
-        sandbox: true
-
-    });
-
+    }
 }
 
+window.addEventListener("load", initPi);
 
-// ==========================
-// تسجيل الدخول عبر Pi
-// ==========================
 
-async function loginWithPi(){
+window.loginAndEnter = async function () {
 
     try {
 
-
-        const auth =
-        await Pi.authenticate(
-            ["username"]
-        );
-
+        const auth = await Pi.authenticate(["username"]);
 
         piUser = auth.user;
 
-        accessToken =
-        auth.accessToken;
+        localStorage.setItem("piUser", piUser.username);
 
+        enterApp();
 
+    } catch (err) {
 
-        if(!piUser){
+        console.error(err);
 
-            throw new Error(
-                "لم يتم استلام بيانات المستخدم"
-            );
-
-        }
-
-
-
-        const playerName =
-        piUser.username;
-
-
-
-        const nameInput =
-        document.getElementById("name");
-
-
-        if(nameInput){
-
-            nameInput.value = playerName;
-
-        }
-
-
-
-        // فتح اللعبة
-
-        if(typeof startGame === "function"){
-
-            startGame(playerName);
-
-        }
-        else if(typeof openGame === "function"){
-
-            openGame();
-
-        }
-
-
-    } catch(error){
-
-
-        console.error(
-            "Pi Login Error:",
-            error
-        );
-
-
-        alert(
-            "تعذر تسجيل الدخول عبر Pi"
-        );
-
-    }
-
-}
-
-
-// جعل الزر يعمل
-
-window.loginWithPi = loginWithPi;
-
-
-
-// ==========================
-// فتح اللعبة
-// ==========================
-
-window.openGame = function(){
-
-
-    const login =
-    document.getElementById("login");
-
-
-    const game =
-    document.getElementById("game");
-
-
-
-    if(login){
-
-        login.classList.add("hidden");
-
-    }
-
-
-    if(game){
-
-        game.classList.remove("hidden");
-
-    }
-
-
-    if(typeof newLevel === "function"){
-
-        newLevel();
+        alert("فشل تسجيل الدخول");
 
     }
 

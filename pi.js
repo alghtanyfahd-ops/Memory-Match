@@ -1,43 +1,45 @@
-let piUser = null;
+let currentPiUser = null;
 
 async function initPi() {
     try {
-
         await Pi.init({
             version: "2.0",
             sandbox: true
         });
 
-        console.log("Pi SDK Ready");
-
-    } catch (e) {
-
-        console.error(e);
-
+        console.log("Pi SDK جاهز");
+    } catch (error) {
+        console.error("خطأ في تهيئة Pi SDK:", error);
     }
 }
 
 window.addEventListener("load", initPi);
 
-
-window.loginAndEnter = async function () {
-
+window.loginPi = async function () {
     try {
-
         const auth = await Pi.authenticate(["username"]);
 
-        piUser = auth.user;
+        currentPiUser = auth.user;
 
-        localStorage.setItem("piUser", piUser.username);
+        localStorage.setItem("piUsername", currentPiUser.username);
 
-        enterApp();
+        const userElement = document.getElementById("playerName");
+        if (userElement) {
+            userElement.textContent = currentPiUser.username;
+        }
 
-    } catch (err) {
+        console.log("تم تسجيل الدخول:", currentPiUser.username);
 
-        console.error(err);
-
-        alert("فشل تسجيل الدخول");
-
+    } catch (error) {
+        console.error("فشل تسجيل الدخول:", error);
     }
+};
 
+window.logoutPi = function () {
+    localStorage.removeItem("piUsername");
+    location.reload();
+};
+
+window.getPiUser = function () {
+    return currentPiUser;
 };

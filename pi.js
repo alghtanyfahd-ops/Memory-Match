@@ -27,7 +27,11 @@ window.loginPi = async function () {
 
     try {
 
-        const auth = await Pi.authenticate(["username"]);
+        const auth = await Pi.authenticate(
+    ["username"],
+    function(payment){},
+    function(payment){}
+);
 
         currentPiUser = auth.user;
 

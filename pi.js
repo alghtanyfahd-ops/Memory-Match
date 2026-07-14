@@ -16,6 +16,8 @@ async function initPi() {
 window.addEventListener("load", initPi);
 
 window.loginPi = async function () {
+    alert("تم الضغط على زر Pi");
+
     try {
         const auth = await Pi.authenticate(["username"]);
 

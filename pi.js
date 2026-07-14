@@ -33,7 +33,15 @@ window.loginPi = async function () {
         console.log("تم تسجيل الدخول:", currentPiUser.username);
 
     } catch (error) {
-        console.error("فشل تسجيل الدخول:", error);
+        } catch (error) {
+
+    console.error(error);
+
+    alert(
+        JSON.stringify(error)
+    );
+
+}
     }
 };
 

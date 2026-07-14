@@ -43,3 +43,4 @@ window.logoutPi = function () {
 window.getPiUser = function () {
     return currentPiUser;
 };
+window.loginWithPi = window.loginPi;

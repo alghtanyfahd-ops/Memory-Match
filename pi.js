@@ -4,7 +4,7 @@ async function initPi() {
     try {
         await Pi.init({
             version: "2.0",
-            sandbox: true
+            sandbox: false
         });
 
         console.log("Pi SDK جاهز");

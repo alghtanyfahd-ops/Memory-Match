@@ -410,17 +410,47 @@ async function showLeaders(){
 
     try{
 
-        const res = await fetch("/api/leaderboard");
+try {
 
-        const data = await res.json();
+    const res = await fetch("/api/leaderboard");
 
-        if(!data.ok){
 
-            board.innerHTML =
-            "<li>لا توجد بيانات</li>";
+    if(!res.ok){
 
-            return;
-        }
+        board.innerHTML =
+        "<li>لا توجد بيانات حالياً</li>";
+
+        return;
+
+    }
+
+
+    const data = await res.json();
+
+
+    if(!data.ok){
+
+        board.innerHTML =
+        "<li>لا توجد بيانات</li>";
+
+        return;
+
+    }
+
+
+} catch(error){
+
+
+    console.log("Leaderboard error:", error);
+
+
+    board.innerHTML =
+    "<li>تعذر تحميل المتصدرين</li>";
+
+
+    return;
+
+}
 
         board.innerHTML = "";
 

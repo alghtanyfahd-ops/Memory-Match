@@ -361,3 +361,4 @@ function showBrainQuestion(){
 
 
 }
+alert("brain.js loaded");

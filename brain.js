@@ -188,16 +188,7 @@ const brainQuestions = [
 
 ];
 // =====================
-// تشغيل لعبة الذكاء
-// =====================
-
-function openBrainGame(){
-    
-}
-
-
-// =====================
-// تشغيل لعبة الذكاء
+// فتح لعبة الذكاء
 // =====================
 
 function openBrainGame(){
@@ -219,7 +210,7 @@ function openBrainGame(){
 
 
 // =====================
-// إغلاق لعبة الذكاء
+// إغلاق اللعبة
 // =====================
 
 function closeBrainGame(){
@@ -238,57 +229,109 @@ function closeBrainGame(){
 
 function showBrainQuestion(){
 
-    let question = brainQuestions[brainIndex];
-console.log(question);
-console.log(brainQuestions[brainIndex]);
+    if(brainIndex >= brainQuestions.length){
 
-let title = document.getElementById("brainQuestion");
+        alert("انتهت اللعبة 🎉\nالنتيجة: " + brainScore);
 
-title.innerHTML =
-"السؤال " + (brainIndex + 1) +
-"<br><br>" +
-brainQuestions[brainIndex].q;
+        closeBrainGame();
 
+        return;
+    }
 
-
-    let answers =
-    document.getElementById("brainAnswers");
-
-
-    answers.innerHTML = "";
-
-
-
-   function showBrainQuestion() {
 
     const question = brainQuestions[brainIndex];
 
-    const title = document.getElementById("brainQuestion");
-    const answers = document.getElementById("brainAnswers");
+
+    const title =
+    document.getElementById("brainQuestion");
+
+
+    const answers =
+    document.getElementById("brainAnswers");
+
+
 
     title.innerHTML =
-        "🧠 المرحلة " + brainLevel +
-        "<br>السؤال " + (brainIndex + 1) + " / 100" +
-        "<br><br>" +
-        question.q;
+    "🧠 المرحلة " + brainLevel +
+    "<br>السؤال " +
+    (brainIndex + 1) +
+    " / " +
+    brainQuestions.length +
+    "<br><br>" +
+    question.q;
+
+
 
     answers.innerHTML = "";
 
-    question.a.forEach((ans, i) => {
 
-        const btn = document.createElement("button");
 
-        btn.innerText = ans;
+    question.a.forEach((ans,index)=>{
 
-        btn.onclick = () => checkBrainAnswer(i);
+
+        let btn =
+        document.createElement("button");
+
+
+        btn.innerHTML = ans;
+
+
+        btn.onclick = function(){
+
+            checkBrainAnswer(index);
+
+        };
+
 
         answers.appendChild(btn);
 
+
     });
 
-    document.getElementById("brainScore").innerText = brainScore;
 
-} 
+
+    document.getElementById("brainScore").innerHTML =
+    brainScore;
+
+}
+
+
+
+// =====================
+// فحص الإجابة
+// =====================
+
+function checkBrainAnswer(answer){
+
+
+    let question =
+    brainQuestions[brainIndex];
+
+
+    if(answer === question.c){
+
+        brainScore++;
+
+    }
+
+
+    brainIndex++;
+
+
+    if(brainIndex % 20 === 0){
+
+        brainLevel++;
+
+    }
+
+
+    showBrainQuestion();
+
+}
+
+
+
+console.log("brain.js loaded");
 
 
     });

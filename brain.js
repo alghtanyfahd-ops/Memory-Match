@@ -250,11 +250,12 @@ function showBrainQuestion(){
     let question = brainQuestions[brainIndex];
 
 
-    document.getElementById("brainQuestion").innerHTML =
-    "🧠 المرحلة " + brainLevel +
-    "<br>السؤال " + (brainIndex + 1) +
-    " / 100<br><br>" +
-    question.q;
+let title = document.getElementById("brainQuestion");
+
+title.innerHTML =
+"السؤال " + (brainIndex + 1) +
+"<br><br>" +
+brainQuestions[brainIndex].q;
 
 
 

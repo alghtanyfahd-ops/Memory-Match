@@ -268,99 +268,36 @@ brainQuestions[brainIndex].q;
 
 
 
-    question.a.forEach(function(answer,index){
+   function showBrainQuestion() {
 
+    const question = brainQuestions[brainIndex];
 
-        let button =
-        document.createElement("button");
+    const title = document.getElementById("brainQuestion");
+    const answers = document.getElementById("brainAnswers");
 
+    title.innerHTML =
+        "🧠 المرحلة " + brainLevel +
+        "<br>السؤال " + (brainIndex + 1) + " / 100" +
+        "<br><br>" +
+        question.q;
 
-        button.textContent = answer;
+    answers.innerHTML = "";
 
+    question.a.forEach((ans, i) => {
 
+        const btn = document.createElement("button");
 
-        button.onclick=function(){
+        btn.innerText = ans;
 
+        btn.onclick = () => checkBrainAnswer(i);
 
-            if(index === question.c){
+        answers.appendChild(btn);
 
+    });
 
-                brainScore += 10;
+    document.getElementById("brainScore").innerText = brainScore;
 
-
-                document
-                .getElementById("brainScore")
-                .textContent = brainScore;
-
-
-
-                if((brainIndex + 1) % 20 === 0){
-
-
-                    brainLevel++;
-
-
-                    alert(
-                    "🎉 تم الانتقال إلى المرحلة " 
-                    + brainLevel
-                    );
-
-
-                }else{
-
-
-                    alert(
-                    "✅ إجابة صحيحة +10 نقاط"
-                    );
-
-
-                }
-
-
-            }else{
-
-
-                alert(
-                "❌ إجابة خاطئة"
-                );
-
-
-            }
-
-
-
-            brainIndex++;
-
-
-
-            if(brainIndex >= brainQuestions.length){
-
-
-                alert(
-                "🏆 انتهى تحدي الذكاء\n\nالنقاط: "
-                + brainScore
-                );
-
-
-                closeBrainGame();
-
-
-
-            }else{
-
-
-                showBrainQuestion();
-
-
-            }
-
-
-
-        };
-
-
-
-        answers.appendChild(button);
+} 
 
 
     });

@@ -196,3 +196,168 @@ const brainQuestions = [
 {q:"وصلت للنهاية! 🎉",a:["إعادة","إنهاء","خروج"],c:1}
 
 ];
+{q:"وصلت للنهاية! 🎉",a:["إعادة","إنهاء","خروج"],c:1}
+
+];
+
+
+// =====================
+// تشغيل لعبة الذكاء
+// =====================
+
+function openBrainGame(){
+
+    document
+    .getElementById("brainModal")
+    .classList.remove("hidden");
+
+
+    brainIndex = 0;
+    brainScore = 0;
+    brainLevel = 1;
+
+
+    showBrainQuestion();
+
+}
+
+
+
+// =====================
+// إغلاق لعبة الذكاء
+// =====================
+
+function closeBrainGame(){
+
+    document
+    .getElementById("brainModal")
+    .classList.add("hidden");
+
+}
+
+
+
+// =====================
+// عرض السؤال
+// =====================
+
+function showBrainQuestion(){
+
+    let question = brainQuestions[brainIndex];
+
+
+    document.getElementById("brainQuestion").innerHTML =
+    "🧠 المرحلة " + brainLevel +
+    "<br>السؤال " + (brainIndex + 1) +
+    " / 100<br><br>" +
+    question.q;
+
+
+
+    let answers =
+    document.getElementById("brainAnswers");
+
+
+    answers.innerHTML = "";
+
+
+
+    question.a.forEach(function(answer,index){
+
+
+        let button =
+        document.createElement("button");
+
+
+        button.textContent = answer;
+
+
+
+        button.onclick=function(){
+
+
+            if(index === question.c){
+
+
+                brainScore += 10;
+
+
+                document
+                .getElementById("brainScore")
+                .textContent = brainScore;
+
+
+
+                if((brainIndex + 1) % 20 === 0){
+
+
+                    brainLevel++;
+
+
+                    alert(
+                    "🎉 تم الانتقال إلى المرحلة " 
+                    + brainLevel
+                    );
+
+
+                }else{
+
+
+                    alert(
+                    "✅ إجابة صحيحة +10 نقاط"
+                    );
+
+
+                }
+
+
+            }else{
+
+
+                alert(
+                "❌ إجابة خاطئة"
+                );
+
+
+            }
+
+
+
+            brainIndex++;
+
+
+
+            if(brainIndex >= brainQuestions.length){
+
+
+                alert(
+                "🏆 انتهى تحدي الذكاء\n\nالنقاط: "
+                + brainScore
+                );
+
+
+                closeBrainGame();
+
+
+
+            }else{
+
+
+                showBrainQuestion();
+
+
+            }
+
+
+
+        };
+
+
+
+        answers.appendChild(button);
+
+
+    });
+
+
+}

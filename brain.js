@@ -248,7 +248,8 @@ function closeBrainGame(){
 function showBrainQuestion(){
 
     let question = brainQuestions[brainIndex];
-
+console.log(question);
+console.log(brainQuestions[brainIndex]);
 
 let title = document.getElementById("brainQuestion");
 

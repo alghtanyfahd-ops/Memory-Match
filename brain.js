@@ -201,7 +201,7 @@ const brainQuestions = [
 // =====================
 
 function openBrainGame(){
-    ...
+    
 }
 
 

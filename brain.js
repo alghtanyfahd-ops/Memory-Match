@@ -407,10 +407,3 @@ function checkBrainAnswer(answer){
 
 
 console.log("brain.js loaded");
-
-
-    });
-
-
-}
-alert("brain.js loaded");
